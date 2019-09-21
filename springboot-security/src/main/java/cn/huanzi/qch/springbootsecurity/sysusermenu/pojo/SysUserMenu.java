@@ -21,12 +21,12 @@ public class SysUserMenu implements Serializable {
     private String menuId;//菜单id
 
     @OneToOne
-    @JoinColumn(name = "userId",referencedColumnName = "userId", insertable = false, updatable = false)
-    @NotFound(action= NotFoundAction.IGNORE)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private SysUser sysUser;//用户
 
     @OneToOne
-    @JoinColumn(name = "menuId",referencedColumnName = "menuId", insertable = false, updatable = false)
-    @NotFound(action= NotFoundAction.IGNORE)
+    @JoinColumn(name = "menuId", referencedColumnName = "menuId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private SysMenu sysMenu;//菜单
 }

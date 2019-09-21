@@ -5,7 +5,7 @@ var websocket = null;
 
 //判断当前浏览器是否支持WebSocket， springboot是项目名
 if ('WebSocket' in window) {
-    websocket = new WebSocket("ws://localhost:10092/websocket/"+username);
+    websocket = new WebSocket("ws://localhost:10092/websocket/" + username);
 } else {
     console.error("不支持WebSocket");
 }
@@ -23,7 +23,7 @@ websocket.onopen = function () {
         url: ctx + "/websocket/getOnlineList",
         contentType: 'application/json;charset=utf-8',
         dataType: 'json',
-        data: {username:username},
+        data: {username: username},
         success: function (data) {
             if (data.length) {
                 //列表
@@ -56,11 +56,11 @@ websocket.onmessage = function (event) {
         var message = messageJson.message;
 
         //最加聊天数据
-        setMessageInnerHTML(srcUser.username,srcUser.username, message);
+        setMessageInnerHTML(srcUser.username, srcUser.username, message);
     }
 
     //普通消息(群聊)
-    if (messageJson.type == "2"){
+    if (messageJson.type == "2") {
         //来源用户
         var srcUser = messageJson.srcUser;
         //目标用户
@@ -69,11 +69,11 @@ websocket.onmessage = function (event) {
         var message = messageJson.message;
 
         //最加聊天数据
-        setMessageInnerHTML(username,tarUser.username, message);
+        setMessageInnerHTML(username, tarUser.username, message);
     }
 
     //对方不在线
-    if (messageJson.type == "0"){
+    if (messageJson.type == "0") {
         //消息
         var message = messageJson.message;
 
@@ -94,9 +94,9 @@ websocket.onmessage = function (event) {
 
         //新旧在线人数对比
         if (oldOnlineCount < onlineCount) {
-            if($("#" + userName + "-status").length > 0){
+            if ($("#" + userName + "-status").length > 0) {
                 $("#" + userName + "-status").text("[在线]");
-            }else{
+            } else {
                 $("#hz-group-body").append("<div class=\"hz-group-list\"><span class='hz-group-list-username'>" + userName + "</span><span id=\"" + userName + "-status\">[在线]</span><div id=\"hz-badge-" + userName + "\" class='hz-badge'>0</div></div>");
             }
         } else {
@@ -114,7 +114,7 @@ websocket.onclose = function () {
 }
 
 //将消息显示在对应聊天窗口    对于接收消息来说这里的toUserName就是来源用户，对于发送来说则相反
-function setMessageInnerHTML(srcUserName,msgUserName, message) {
+function setMessageInnerHTML(srcUserName, msgUserName, message) {
     //判断
     var childrens = $("#hz-group-body").children(".hz-group-list");
     var isExist = false;
@@ -160,7 +160,7 @@ function setMessageInnerHTML(srcUserName,msgUserName, message) {
     if (srcUserName == username) {
         $("#hz-message-body").append(
             "<div class=\"hz-message-list\">" +
-            "<p class='hz-message-list-username'>"+msgUserName+"：</p>" +
+            "<p class='hz-message-list-username'>" + msgUserName + "：</p>" +
             "<div class=\"hz-message-list-text left\">" +
             "<span>" + message + "</span>" +
             "</div>" +
@@ -261,11 +261,11 @@ $("body").on("click", ".hz-group-list", function () {
                             leftOrRight = "right";
                         }
 
-                        var magUserName = leftOrRight == "left" ? "<p class='hz-message-list-username'>"+msgUserName+"：</p>" : "";
+                        var magUserName = leftOrRight == "left" ? "<p class='hz-message-list-username'>" + msgUserName + "：</p>" : "";
 
                         $("#hz-message-body").append(
                             "<div class=\"hz-message-list\">" +
-                            magUserName+
+                            magUserName +
                             "<div class=\"hz-message-list-text " + leftOrRight + "\">" +
                             "<span>" + message + "</span>" +
                             "</div>" +

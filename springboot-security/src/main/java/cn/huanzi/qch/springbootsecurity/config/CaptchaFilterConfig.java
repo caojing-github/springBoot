@@ -3,7 +3,6 @@ package cn.huanzi.qch.springbootsecurity.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,11 +23,11 @@ public class CaptchaFilterConfig implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         //只拦截登录请求，且开发环境下不拦截
-        if("POST".equals(request.getMethod()) && "/login".equals(request.getRequestURI()) && captchaEnable){
+        if ("POST".equals(request.getMethod()) && "/login".equals(request.getRequestURI()) && captchaEnable) {
             //从session中获取生成的验证码
             String verifyCode = request.getSession().getAttribute("verifyCode").toString();
 
-            if (!verifyCode.toLowerCase().equals(request.getParameter("captcha").toLowerCase())){
+            if (!verifyCode.toLowerCase().equals(request.getParameter("captcha").toLowerCase())) {
                 System.out.println("验证码错误");
                 //响应json
                 response.setCharacterEncoding("UTF-8");
@@ -41,6 +40,6 @@ public class CaptchaFilterConfig implements Filter {
             }
         }
 
-        filterChain.doFilter(servletRequest,servletResponse);
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 }

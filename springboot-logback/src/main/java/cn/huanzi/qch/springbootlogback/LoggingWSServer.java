@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.util.StringUtils;
 
-import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -53,7 +52,7 @@ public class LoggingWSServer {
                 BufferedReader reader = null;
                 try {
                     //日志文件路径，获取最新的
-                    String filePath = System.getProperty("user.home") + "/log/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/"+applicationName+".log";
+                    String filePath = System.getProperty("user.home") + "/log/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + applicationName + ".log";
 
                     //字符流
                     reader = new BufferedReader(new FileReader(filePath));
@@ -67,9 +66,9 @@ public class LoggingWSServer {
                         String line = (String) copyOfRange[i];
                         //先转义
                         line = line.replaceAll("&", "&amp;")
-                                .replaceAll("<", "&lt;")
-                                .replaceAll(">", "&gt;")
-                                .replaceAll("\"", "&quot;");
+                            .replaceAll("<", "&lt;")
+                            .replaceAll(">", "&gt;")
+                            .replaceAll("\"", "&quot;");
 
                         //处理等级
                         line = line.replace("DEBUG", "<span style='color: blue;'>DEBUG</span>");
@@ -89,12 +88,12 @@ public class LoggingWSServer {
                         // 匹配日期开头加换行，2019-08-12 14:15:04
                         Pattern r = Pattern.compile("[\\d+][\\d+][\\d+][\\d+]-[\\d+][\\d+]-[\\d+][\\d+] [\\d+][\\d+]:[\\d+][\\d+]:[\\d+][\\d+]");
                         Matcher m = r.matcher(line);
-                        if (m.find( )) {
+                        if (m.find()) {
                             //找到下标
                             int start = m.start();
                             //插入
-                            StringBuilder  sb = new StringBuilder (line);
-                            sb.insert(start,"<br/><br/>");
+                            StringBuilder sb = new StringBuilder(line);
+                            sb.insert(start, "<br/><br/>");
                             line = sb.toString();
                         }
 
@@ -105,7 +104,7 @@ public class LoggingWSServer {
                     lengthMap.put(session.getId(), lines.length);
 
                     //第一次如果太大，截取最新的200行就够了，避免传输的数据太大
-                    if(first && copyOfRange.length > 200){
+                    if (first && copyOfRange.length > 200) {
                         copyOfRange = Arrays.copyOfRange(copyOfRange, copyOfRange.length - 200, copyOfRange.length);
                         first = false;
                     }

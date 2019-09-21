@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 public class TbUser implements Serializable {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//表id
 
     private String username;//用户名

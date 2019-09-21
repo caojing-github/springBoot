@@ -22,16 +22,16 @@ public class SwaggerConfig {
     @Bean
     public Docket controllerApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(new ApiInfoBuilder()
-                        .title("API实时接口文档")
-                        .description("用于实时查看、测试API")
-                        .contact(new Contact("huanzi-qch", "https://www.cnblogs.com/huanzi-qch/", ""))
-                        .version("版本号:1.0")
-                        .build())
-                .select()
-                //API基础扫描路径
-                .apis(RequestHandlerSelectors.basePackage("cn.huanzi.qch.springbootswagger2.controller"))
-                .paths(PathSelectors.any())
-                .build();
+            .apiInfo(new ApiInfoBuilder()
+                .title("API实时接口文档")
+                .description("用于实时查看、测试API")
+                .contact(new Contact("huanzi-qch", "https://www.cnblogs.com/huanzi-qch/", ""))
+                .version("版本号:1.0")
+                .build())
+            .select()
+            //API基础扫描路径
+            .apis(RequestHandlerSelectors.basePackage("cn.huanzi.qch.springbootswagger2.controller"))
+            .paths(PathSelectors.any())
+            .build();
     }
 }

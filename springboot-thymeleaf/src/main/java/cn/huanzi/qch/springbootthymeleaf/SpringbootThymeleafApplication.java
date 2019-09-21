@@ -18,7 +18,7 @@ public class SpringbootThymeleafApplication {
     }
 
     @RequestMapping("/")
-    public ModelAndView index(){
+    public ModelAndView index() {
         ArrayList<UserVo> userVos = new ArrayList<>();
         UserVo userVo = new UserVo();
         userVo.setId(1);
@@ -29,11 +29,11 @@ public class SpringbootThymeleafApplication {
         userVo2.setUsername("huznzi2");
         userVos.add(userVo2);
 
-        ModelAndView mv=new ModelAndView();
-        mv.addObject("newText","你好，springboot-thymeleaf");
-        mv.addObject("gender","1");
-        mv.addObject("userList",userVos);
-        mv.addObject("loginUser",userVo);
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("newText", "你好，springboot-thymeleaf");
+        mv.addObject("gender", "1");
+        mv.addObject("userList", userVos);
+        mv.addObject("loginUser", userVo);
         mv.setViewName("index.html");
         return mv;
     }

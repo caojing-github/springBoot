@@ -14,7 +14,7 @@ public class SpringbootAopApplication {
     }
 
     @RequestMapping("/")
-    public String index(){
+    public String index() {
         return "欢迎访问 springboot-aop";
     }
 }

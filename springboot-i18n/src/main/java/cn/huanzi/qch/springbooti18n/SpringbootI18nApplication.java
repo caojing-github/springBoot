@@ -15,8 +15,8 @@ public class SpringbootI18nApplication {
     }
 
     @RequestMapping("/i18nTest")
-    public ModelAndView i18nTest(){
-        ModelAndView mv=new ModelAndView();
+    public ModelAndView i18nTest() {
+        ModelAndView mv = new ModelAndView();
         mv.setViewName("i18nTest.html");
         return mv;
     }

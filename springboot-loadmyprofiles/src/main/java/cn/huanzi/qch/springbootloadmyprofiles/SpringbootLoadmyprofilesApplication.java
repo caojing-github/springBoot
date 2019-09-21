@@ -31,7 +31,7 @@ public class SpringbootLoadmyprofilesApplication {
     private String zzz;
 
     @Bean
-    void index(){
+    void index() {
         System.out.println(xxx);
         System.out.println(yyy);
         System.out.println(zzz);

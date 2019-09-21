@@ -45,13 +45,13 @@ public class Result {
     @Override
     public String toString() {
         return "Result{" +
-                "message='" + message + '\'' +
-                ", status=" + status +
-                ", data=" + data +
-                '}';
+            "message='" + message + '\'' +
+            ", status=" + status +
+            ", data=" + data +
+            '}';
     }
 
-    public static Result build(Integer status,String message,Object data){
-            return new Result(message,status,data);
+    public static Result build(Integer status, String message, Object data) {
+        return new Result(message, status, data);
     }
 }

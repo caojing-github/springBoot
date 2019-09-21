@@ -1,6 +1,8 @@
 package cn.huanzi.qch.springbootsecurity.sysuser.vo;
 
-import cn.huanzi.qch.springbootsecurity. common.pojo.PageCondition;import lombok.Data;
+import cn.huanzi.qch.springbootsecurity.common.pojo.PageCondition;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 

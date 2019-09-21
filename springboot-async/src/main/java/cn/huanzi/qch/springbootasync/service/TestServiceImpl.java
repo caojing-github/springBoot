@@ -55,7 +55,7 @@ public class TestServiceImpl implements TestService {
         tbUser.setPassword("123456");
         tbUserRepository.save(tbUser);
 
-        if(exFlag){
+        if (exFlag) {
             //模拟异常
             throw new RuntimeException("模拟异常");
         }

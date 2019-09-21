@@ -4,7 +4,6 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 import javax.servlet.http.HttpServletRequest;
@@ -16,14 +15,14 @@ import java.util.List;
 @Component
 @ServletComponentScan
 @WebFilter(filterName = "myCorsFilter", //过滤器名称
-        urlPatterns = "/cors/corsByMyCorsFilter",//url路径
-        initParams = {
-                @WebInitParam(name = "allowOrigin", value = "https://www.cnblogs.com"),//允许的请求源，可用,分隔，*表示所有
-                @WebInitParam(name = "allowMethods", value = "POST"),//允许的请求方法，可用,分隔，*表示所有
-                @WebInitParam(name = "allowCredentials", value = "true"),
-                @WebInitParam(name = "allowHeaders", value = "*"),
-                @WebInitParam(name = "maxAge", value = "3600"),//60秒 * 60，相当于一个小时
-        })
+    urlPatterns = "/cors/corsByMyCorsFilter",//url路径
+    initParams = {
+        @WebInitParam(name = "allowOrigin", value = "https://www.cnblogs.com"),//允许的请求源，可用,分隔，*表示所有
+        @WebInitParam(name = "allowMethods", value = "POST"),//允许的请求方法，可用,分隔，*表示所有
+        @WebInitParam(name = "allowCredentials", value = "true"),
+        @WebInitParam(name = "allowHeaders", value = "*"),
+        @WebInitParam(name = "maxAge", value = "3600"),//60秒 * 60，相当于一个小时
+    })
 public class MyCorsFilter implements Filter {
 
     private String allowOrigin;

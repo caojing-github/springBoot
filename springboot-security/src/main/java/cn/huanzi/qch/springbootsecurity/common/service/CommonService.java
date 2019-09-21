@@ -13,7 +13,7 @@ import java.util.List;
  * @param <E> 实体类
  * @param <T> id主键类型
  */
-public interface CommonService<V, E,T> {
+public interface CommonService<V, E, T> {
 
     Result<PageInfo<V>> page(V entityVo);
 

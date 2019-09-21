@@ -1,7 +1,5 @@
 package cn.huanzi.qch.springbootcors.controller;
 
-import org.springframework.web.bind.annotation.*;
-
 @RequestMapping("cors/")
 @RestController
 public class TestController {
@@ -24,11 +22,11 @@ public class TestController {
        })
     */
     @CrossOrigin(
-            origins = "https://www.cnblogs.com",
-            allowedHeaders = "*",
-            methods = {RequestMethod.POST},
-            allowCredentials = "true",
-            maxAge = 3600
+        origins = "https://www.cnblogs.com",
+        allowedHeaders = "*",
+        methods = {RequestMethod.POST},
+        allowCredentials = "true",
+        maxAge = 3600
     )
     @PostMapping("corsByAnnotation")
     public String corsByAnnotation(String id) {

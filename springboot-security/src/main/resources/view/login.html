@@ -38,8 +38,10 @@
         <div class="layui-form-item">
             <label class="layui-form-label">验证码</label>
             <div class="layui-input-inline">
-                <input type="text" id="captcha" name="captcha" placeholder="请输入验证码" class="layui-input" style="float: left;width: 52%">
-                <img id="captchaImg" th:src="@{/getVerifyCodeImage}" onclick="changeCode()"/><!-- <a href="javascript:changeCode()">看不清换一张</a>-->
+                <input type="text" id="captcha" name="captcha" placeholder="请输入验证码" class="layui-input"
+                       style="float: left;width: 52%">
+                <img id="captchaImg" th:src="@{/getVerifyCodeImage}" onclick="changeCode()"/>
+                <!-- <a href="javascript:changeCode()">看不清换一张</a>-->
             </div>
         </div>
         <div class="layui-form-item">
@@ -66,11 +68,12 @@
             layui.use('layer', function () {
                 var layer = layui.layer;
                 if (data.code == 300) {
-                    layer.msg(data.msg, {icon: 1,time: 1000}, function () {
+                    layer.msg(data.msg, {icon: 1, time: 1000}, function () {
                         window.location.href = ctx + data.url;
                     });
                 } else {
-                    layer.msg(data.msg, {icon: 2,time: 2000}, function () {});
+                    layer.msg(data.msg, {icon: 2, time: 2000}, function () {
+                    });
                 }
             });
         })

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 //war包
 @SpringBootApplication
-public class SpringbootJarWarApplication  extends SpringBootServletInitializer implements WebApplicationInitializer {
+public class SpringbootJarWarApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(SpringbootJarWarApplication.class);
@@ -36,10 +36,10 @@ public class SpringbootJarWarApplication  extends SpringBootServletInitializer i
  * 测试controller
  */
 @RestController
-class IndexController{
+class IndexController {
 
     @GetMapping("/")
-    String index(){
+    String index() {
         return "欢迎访问 springboot-jar-war";
     }
 }

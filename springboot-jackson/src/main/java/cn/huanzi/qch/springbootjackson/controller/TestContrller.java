@@ -3,7 +3,6 @@ package cn.huanzi.qch.springbootjackson.controller;
 import cn.huanzi.qch.springbootjackson.vo.UserVo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ public class TestContrller {
      * 跳转页面，页面引入了jquery，主要用于下面的ajax调用测试
      */
     @GetMapping("/")
-    public ModelAndView index(){
+    public ModelAndView index() {
         return new ModelAndView("index");
     }
 
@@ -42,6 +41,7 @@ public class TestContrller {
            }
         })
      */
+
     /**
      * 反序列化方式注入
      */
@@ -70,6 +70,7 @@ public class TestContrller {
            }
         })
      */
+
     /**
      * MVC方式注入
      */

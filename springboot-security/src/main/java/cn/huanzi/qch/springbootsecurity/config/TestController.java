@@ -23,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,83 +43,82 @@ public class TestController {
     /*  错误响应页面  */
 
     @GetMapping("/error/403")
-    public ModelAndView error403(){
+    public ModelAndView error403() {
         return new ModelAndView("error/403");
     }
 
     @GetMapping("/error/404")
-    public ModelAndView error404(){
+    public ModelAndView error404() {
         return new ModelAndView("error/404");
     }
 
     @GetMapping("/error/500")
-    public ModelAndView error500(){
+    public ModelAndView error500() {
         return new ModelAndView("error/500");
     }
 
 
-
     @GetMapping("/loginPage")
-    public ModelAndView login(){
+    public ModelAndView login() {
         return new ModelAndView("login");
     }
 
     @GetMapping("/index")
-    public ModelAndView index(){
+    public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView("index");
         //登录用户
         SysUserVo sysUserVo = getLoginUser();
-        modelAndView.addObject( "loginUser", sysUserVo);
+        modelAndView.addObject("loginUser", sysUserVo);
 
         //登录用户系统菜单
         List<SysMenuVo> menuVoList = new ArrayList<>();
         List<SysUserMenuVo> sysUserMenuVoList = sysUserMenuService.findByUserId(sysUserVo.getUserId()).getData();
         sysUserMenuVoList.forEach((sysUserMenuVo) -> {
             SysMenuVo sysMenuVo = sysUserMenuVo.getSysMenu();
-            if(StringUtils.isEmpty(sysMenuVo.getMenuParentId())){
+            if (StringUtils.isEmpty(sysMenuVo.getMenuParentId())) {
                 //上级节点
                 menuVoList.add(sysMenuVo);
             }
         });
         sysUserMenuVoList.forEach((sysUserMenuVo) -> {
             SysMenuVo sysMenuVo = sysUserMenuVo.getSysMenu();
-            if(!StringUtils.isEmpty(sysMenuVo.getMenuParentId())){
+            if (!StringUtils.isEmpty(sysMenuVo.getMenuParentId())) {
                 //子节点
                 menuVoList.forEach((sysMenuVoP) -> {
-                    if(sysMenuVoP.getMenuId().equals(sysMenuVo.getMenuParentId())){
+                    if (sysMenuVoP.getMenuId().equals(sysMenuVo.getMenuParentId())) {
                         sysMenuVoP.getSysMenuVos().add(sysMenuVo);
                     }
                 });
             }
         });
-        modelAndView.addObject("menuList",menuVoList);
+        modelAndView.addObject("menuList", menuVoList);
 
 
         //登录用户快捷菜单
         List<SysShortcutMenuVo> shortcutMenuVoList = new ArrayList<>();
         List<SysShortcutMenuVo> sysShortcutMenuVoList = sysShortcutMenuService.findByUserId(sysUserVo.getUserId()).getData();
         sysShortcutMenuVoList.forEach((SysShortcutMenuVo) -> {
-            if(StringUtils.isEmpty(SysShortcutMenuVo.getShortcutMenuParentId())){
+            if (StringUtils.isEmpty(SysShortcutMenuVo.getShortcutMenuParentId())) {
                 //上级节点
                 shortcutMenuVoList.add(SysShortcutMenuVo);
             }
         });
         sysShortcutMenuVoList.forEach((SysShortcutMenuVo) -> {
-            if(!StringUtils.isEmpty(SysShortcutMenuVo.getShortcutMenuParentId())){
+            if (!StringUtils.isEmpty(SysShortcutMenuVo.getShortcutMenuParentId())) {
                 //子节点
                 shortcutMenuVoList.forEach((sysShortcutMenuVoP) -> {
-                    if(sysShortcutMenuVoP.getShortcutMenuId().equals(SysShortcutMenuVo.getShortcutMenuParentId())){
+                    if (sysShortcutMenuVoP.getShortcutMenuId().equals(SysShortcutMenuVo.getShortcutMenuParentId())) {
                         sysShortcutMenuVoP.getSysShortcutMenuVos().add(SysShortcutMenuVo);
                     }
                 });
             }
         });
-        modelAndView.addObject("shortcutMenuList",shortcutMenuVoList);
+        modelAndView.addObject("shortcutMenuList", shortcutMenuVoList);
         return modelAndView;
     }
 
     @GetMapping("/admin/test")
-    public String test(){
+    public String test() {
         return "管理员才能访问啵";
     }
 

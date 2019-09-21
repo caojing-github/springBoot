@@ -1,6 +1,5 @@
 package cn.huanzi.qch.springbootjackson.vo;
 
-import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 
 import java.util.Date;

@@ -12,9 +12,9 @@ import java.util.Date;
 @Component
 public class TestScheduler {
 
-    @Scheduled(cron="0/30 * * * * ?")
-    private void test(){
+    @Scheduled(cron = "0/30 * * * * ?")
+    private void test() {
         //在能被30整除的秒数执行一次
-        System.err.println("这句话每30秒打印一次  "+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        System.err.println("这句话每30秒打印一次  " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     }
 }

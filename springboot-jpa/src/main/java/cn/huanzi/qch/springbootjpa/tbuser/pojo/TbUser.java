@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class TbUser implements Serializable {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//表id
 
     private String username;//用户名
@@ -26,8 +26,8 @@ public class TbUser implements Serializable {
     private Integer descriptionId;//关联详情id
 
     @OneToOne
-    @JoinColumn(name = "descriptionId",referencedColumnName = "id", insertable = false, updatable = false)
-    @NotFound(action= NotFoundAction.IGNORE)
+    @JoinColumn(name = "descriptionId", referencedColumnName = "id", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     //用户描述信息
     private TbDescription description;
 }

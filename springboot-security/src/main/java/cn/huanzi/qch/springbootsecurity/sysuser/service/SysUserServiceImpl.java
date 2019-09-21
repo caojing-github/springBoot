@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
 
 @Service
 @Transactional
-public class SysUserServiceImpl extends CommonServiceImpl<SysUserVo, SysUser, String> implements SysUserService{
+public class SysUserServiceImpl extends CommonServiceImpl<SysUserVo, SysUser, String> implements SysUserService {
 
     @PersistenceContext
     private EntityManager em;
@@ -24,6 +24,6 @@ public class SysUserServiceImpl extends CommonServiceImpl<SysUserVo, SysUser, St
 
     @Override
     public Result<SysUserVo> findByLoginName(String username) {
-        return Result.of(CopyUtil.copy(sysUserRepository.findByLoginName(username),SysUserVo.class));
+        return Result.of(CopyUtil.copy(sysUserRepository.findByLoginName(username), SysUserVo.class));
     }
 }

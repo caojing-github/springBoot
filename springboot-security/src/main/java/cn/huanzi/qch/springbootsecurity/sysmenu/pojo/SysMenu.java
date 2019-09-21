@@ -1,9 +1,9 @@
 package cn.huanzi.qch.springbootsecurity.sysmenu.pojo;
 
 import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 @Table(name = "sys_menu")

@@ -14,10 +14,10 @@ public class MyConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/cors/corsByConfig")
-                        .allowedOrigins("https://www.cnblogs.com")
-                        .allowedMethods("POST")
-                        .allowedHeaders("*")
-                        .allowCredentials(true).maxAge(3600);
+                    .allowedOrigins("https://www.cnblogs.com")
+                    .allowedMethods("POST")
+                    .allowedHeaders("*")
+                    .allowCredentials(true).maxAge(3600);
             }
         };
     }

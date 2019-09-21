@@ -1,8 +1,9 @@
 package cn.huanzi.qch.springbootsecurity.sysauthority.vo;
 
-import cn.huanzi.qch.springbootsecurity. common.pojo.PageCondition;import lombok.Data;
+import cn.huanzi.qch.springbootsecurity.common.pojo.PageCondition;
+import lombok.Data;
+
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 public class SysAuthorityVo extends PageCondition implements Serializable {

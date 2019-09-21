@@ -1,6 +1,7 @@
 package cn.huanzi.qch.springbootsecurity.sysuser.pojo;
 
 import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;

@@ -128,29 +128,29 @@
 
         // Place holder replacement
         /**
-        * Tested with:
-        *   test.t1=asdf ''{0}''
-        *   test.t2=asdf '{0}' '{1}'{1}'zxcv
-        *   test.t3=This is \"a quote" 'a''{0}''s'd{fgh{ij'
-        *   test.t4="'''{'0}''" {0}{a}
-        *   test.t5="'''{0}'''" {1}
-        *   test.t6=a {1} b {0} c
-        *   test.t7=a 'quoted \\ s\ttringy' \t\t x
-        *
-        * Produces:
-        *   test.t1, p1 ==> asdf 'p1'
-        *   test.t2, p1 ==> asdf {0} {1}{1}zxcv
-        *   test.t3, p1 ==> This is "a quote" a'{0}'sd{fgh{ij
-        *   test.t4, p1 ==> "'{0}'" p1{a}
-        *   test.t5, p1 ==> "'{0}'" {1}
-        *   test.t6, p1 ==> a {1} b p1 c
-        *   test.t6, p1, p2 ==> a p2 b p1 c
-        *   test.t6, p1, p2, p3 ==> a p2 b p1 c
-        *   test.t7 ==> a quoted \ s	tringy 		 x
-        */
+         * Tested with:
+         *   test.t1=asdf ''{0}''
+         *   test.t2=asdf '{0}' '{1}'{1}'zxcv
+         *   test.t3=This is \"a quote" 'a''{0}''s'd{fgh{ij'
+         *   test.t4="'''{'0}''" {0}{a}
+         *   test.t5="'''{0}'''" {1}
+         *   test.t6=a {1} b {0} c
+         *   test.t7=a 'quoted \\ s\ttringy' \t\t x
+         *
+         * Produces:
+         *   test.t1, p1 ==> asdf 'p1'
+         *   test.t2, p1 ==> asdf {0} {1}{1}zxcv
+         *   test.t3, p1 ==> This is "a quote" a'{0}'sd{fgh{ij
+         *   test.t4, p1 ==> "'{0}'" p1{a}
+         *   test.t5, p1 ==> "'{0}'" {1}
+         *   test.t6, p1 ==> a {1} b p1 c
+         *   test.t6, p1, p2 ==> a p2 b p1 c
+         *   test.t6, p1, p2, p3 ==> a p2 b p1 c
+         *   test.t7 ==> a quoted \ s	tringy 		 x
+         */
 
         var i;
-        if (typeof(value) == 'string') {
+        if (typeof (value) == 'string') {
             // Handle escape characters. Done separately from the tokenizing loop below because escape characters are
             // active in quoted strings.
             i = 0;
@@ -241,13 +241,13 @@
         if (value.length === 0) {
             return "";
         }
-        if (value.length == 1 && typeof(value[0]) == "string") {
+        if (value.length == 1 && typeof (value[0]) == "string") {
             return value[0];
         }
 
         var str = "";
         for (i = 0, j = value.length; i < j; i++) {
-            if (typeof(value[i]) == "string") {
+            if (typeof (value[i]) == "string") {
                 str += value[i];
             } else if (phvList && value[i] < phvList.length) {
                 // Must be a number
@@ -283,12 +283,12 @@
 
         if (settings.debug) debug('loadAndParseFiles');
 
-	    if (fileNames !== null && fileNames.length > 0) {
-		    loadAndParseFile(fileNames[0], settings, function () {
-			    fileNames.shift();
-			    loadAndParseFiles(fileNames,settings);
-		    });
-	    } else {
+        if (fileNames !== null && fileNames.length > 0) {
+            loadAndParseFile(fileNames[0], settings, function () {
+                fileNames.shift();
+                loadAndParseFiles(fileNames, settings);
+            });
+        } else {
             callbackIfComplete(settings);
         }
     }
@@ -297,12 +297,12 @@
     function loadAndParseFile(filename, settings, nextFile) {
 
         if (settings.debug) {
-            debug('loadAndParseFile(\'' + filename +'\')');
+            debug('loadAndParseFile(\'' + filename + '\')');
             debug('totalFiles: ' + settings.totalFiles);
             debug('filesLoaded: ' + settings.filesLoaded);
         }
 
-  	    if (filename !== null && typeof filename !== 'undefined') {
+        if (filename !== null && typeof filename !== 'undefined') {
             $.ajax({
                 url: filename,
                 async: settings.async,
@@ -439,11 +439,11 @@
 
         if (!lang || lang.length < 2) {
             lang = (navigator.languages && navigator.languages.length > 0) ? navigator.languages[0]
-                                        : (navigator.language || navigator.userLanguage /* IE */ || 'en');
+                : (navigator.language || navigator.userLanguage /* IE */ || 'en');
         }
 
         lang = lang.toLowerCase();
-        lang = lang.replace(/-/,"_"); // some browsers report language as en-US instead of en_US
+        lang = lang.replace(/-/, "_"); // some browsers report language as en-US instead of en_US
         if (lang.length > 3) {
             lang = lang.substring(0, 3) + lang.substring(3).toUpperCase();
         }
@@ -460,6 +460,8 @@
             codes.push(code);
         }
         // convert codes to text
-        return codes.reduce(function (acc, val) { return acc + String.fromCharCode(val); }, '');
+        return codes.reduce(function (acc, val) {
+            return acc + String.fromCharCode(val);
+        }, '');
     }
-}) (jQuery);
+})(jQuery);

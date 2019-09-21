@@ -58,7 +58,7 @@ class SpringBootMailServiceImpl implements SpringBootMailService {
         helper.setSubject(subject);
         helper.setText(content, true);
         //添加附件
-        for(File file : files){
+        for (File file : files) {
             helper.addAttachment(file.getName(), new FileSystemResource(file));
         }
 

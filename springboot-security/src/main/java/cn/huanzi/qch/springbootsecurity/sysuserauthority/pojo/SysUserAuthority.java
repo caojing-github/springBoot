@@ -21,13 +21,13 @@ public class SysUserAuthority implements Serializable {
     private String authorityId;//权限id
 
     @OneToOne
-    @JoinColumn(name = "userId",referencedColumnName = "userId", insertable = false, updatable = false)
-    @NotFound(action= NotFoundAction.IGNORE)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private SysUser sysUser;//用户
 
     @OneToOne
-    @JoinColumn(name = "authorityId",referencedColumnName = "authorityId", insertable = false, updatable = false)
-    @NotFound(action= NotFoundAction.IGNORE)
+    @JoinColumn(name = "authorityId", referencedColumnName = "authorityId", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     private SysAuthority sysAuthority;//权限
 
 }

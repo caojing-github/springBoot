@@ -26,6 +26,7 @@ public interface SpringBootMailService {
 
     /**
      * 发送HTML格式的邮件，并可以添加附件
+     *
      * @param to      接收方
      * @param subject 邮件主题
      * @param content HTML格式的邮件内容

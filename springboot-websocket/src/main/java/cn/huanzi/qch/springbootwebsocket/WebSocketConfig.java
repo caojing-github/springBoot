@@ -24,7 +24,7 @@ public class WebSocketConfig {
      * 支持注入其他类
      */
     @Bean
-    public MyEndpointConfigure  newMyEndpointConfigure (){
-        return new MyEndpointConfigure ();
+    public MyEndpointConfigure newMyEndpointConfigure() {
+        return new MyEndpointConfigure();
     }
 }

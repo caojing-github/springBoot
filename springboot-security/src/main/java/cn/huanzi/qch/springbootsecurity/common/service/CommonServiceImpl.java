@@ -100,7 +100,7 @@ public class CommonServiceImpl<V, E, T> implements CommonService<V, E, T> {
                 }
 
                 //找出值为空的属性，值为空则为忽略属性，或者被NotFound标注，我们复制的时候不进行赋值
-                if(null == fieldValue || field.isAnnotationPresent(NotFound.class)){
+                if (null == fieldValue || field.isAnnotationPresent(NotFound.class)) {
                     ignoreProperties.add(fieldName);
                 }
             }

@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- 自定义环境处理，在运行SpringApplication之前加载任意配置文件到Environment环境中
+ * 自定义环境处理，在运行SpringApplication之前加载任意配置文件到Environment环境中
  */
 public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
@@ -20,12 +20,12 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
     private final Properties properties = new Properties();
 
     @Override
-    public void postProcessEnvironment(ConfigurableEnvironment environment,SpringApplication application) {
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         //自定义配置文件
         String[] profiles = {
-                "xxx.properties",
-                "yyy.properties",
-                "zzz.yml",
+            "xxx.properties",
+            "yyy.properties",
+            "zzz.yml",
         };
 
         //循环添加
@@ -46,7 +46,7 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
             //从输入流中加载一个Properties对象
             properties.load(resource.getInputStream());
             return new PropertiesPropertySource(resource.getFilename(), properties);
-        }catch (IOException ex) {
+        } catch (IOException ex) {
             throw new IllegalStateException("加载配置文件失败" + resource, ex);
         }
     }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -101,7 +100,7 @@ public class WebSocketServer {
             //如果点击的是自己，那就是群聊
             if (srcUser.get("username").equals(tarUser.get("username"))) {
                 //群聊
-                groupChat(session,hashMap);
+                groupChat(session, hashMap);
             } else {
                 //私聊
                 privateChat(session, tarUser, hashMap);
@@ -156,7 +155,7 @@ public class WebSocketServer {
     /**
      * 群聊
      */
-    private void groupChat(Session session,HashMap hashMap) throws IOException {
+    private void groupChat(Session session, HashMap hashMap) throws IOException {
         for (Entry<String, Session> entry : sessionMap.entrySet()) {
             //自己就不用再发送消息了
             if (entry.getValue() != session) {

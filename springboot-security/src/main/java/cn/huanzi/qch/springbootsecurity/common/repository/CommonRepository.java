@@ -11,6 +11,6 @@ import org.springframework.data.repository.NoRepositoryBean;
  * @param <T> id主键类型
  */
 @NoRepositoryBean
-public interface CommonRepository<E,T> extends JpaRepository<E,T>, JpaSpecificationExecutor<E> {
+public interface CommonRepository<E, T> extends JpaRepository<E, T>, JpaSpecificationExecutor<E> {
 
 }

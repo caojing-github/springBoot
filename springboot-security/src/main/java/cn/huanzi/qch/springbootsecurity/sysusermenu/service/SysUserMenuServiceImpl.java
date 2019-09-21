@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class SysUserMenuServiceImpl extends CommonServiceImpl<SysUserMenuVo, SysUserMenu, String> implements SysUserMenuService{
+public class SysUserMenuServiceImpl extends CommonServiceImpl<SysUserMenuVo, SysUserMenu, String> implements SysUserMenuService {
 
     @PersistenceContext
     private EntityManager em;

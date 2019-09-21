@@ -17,16 +17,16 @@ public class SpringbootRedisApplication {
 
     //测试：http://localhost:10088/redis/get/huanzi
     @RequestMapping("/redis/get/{key}")
-    private String get(@PathVariable("key") String key){
+    private String get(@PathVariable("key") String key) {
         return template.opsForValue().get(key);
     }
 
     //测试：http://localhost:10088/redis/set/huanzi/huanzi
     @RequestMapping("/redis/set/{key}/{value}")
-    private Boolean set(@PathVariable("key") String key,@PathVariable("value") String value){
+    private Boolean set(@PathVariable("key") String key, @PathVariable("value") String value) {
         boolean flag = true;
         try {
-            template.opsForValue().set(key,value);
+            template.opsForValue().set(key, value);
         } catch (Exception e) {
             e.printStackTrace();
             flag = false;

@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class SysShortcutMenuServiceImpl extends CommonServiceImpl<SysShortcutMenuVo, SysShortcutMenu, String> implements SysShortcutMenuService{
+public class SysShortcutMenuServiceImpl extends CommonServiceImpl<SysShortcutMenuVo, SysShortcutMenu, String> implements SysShortcutMenuService {
 
     @PersistenceContext
     private EntityManager em;
