@@ -6,6 +6,9 @@
     <groupId>cn.huanzi.qch</groupId>
     <artifactId>parent</artifactId>
     <version>1.0.0</version>
+    <modules>
+        <module>general-util</module>
+    </modules>
     <packaging>pom</packaging>
 
     <parent>
