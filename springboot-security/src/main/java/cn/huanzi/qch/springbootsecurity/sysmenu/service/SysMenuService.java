@@ -1,6 +1,6 @@
 package cn.huanzi.qch.springbootsecurity.sysmenu.service;
 
-import cn.huanzi.qch.springbootsecurity.common.service.*;
+import cn.huanzi.qch.springbootsecurity.common.service.CommonService;
 import cn.huanzi.qch.springbootsecurity.sysmenu.pojo.SysMenu;
 import cn.huanzi.qch.springbootsecurity.sysmenu.vo.SysMenuVo;
 

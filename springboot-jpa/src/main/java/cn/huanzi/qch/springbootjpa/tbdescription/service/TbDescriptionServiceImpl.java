@@ -1,6 +1,6 @@
 package cn.huanzi.qch.springbootjpa.tbdescription.service;
 
-import cn.huanzi.qch.springbootjpa.common.service.*;
+import cn.huanzi.qch.springbootjpa.common.service.CommonServiceImpl;
 import cn.huanzi.qch.springbootjpa.tbdescription.pojo.TbDescription;
 import cn.huanzi.qch.springbootjpa.tbdescription.repository.TbDescriptionRepository;
 import cn.huanzi.qch.springbootjpa.tbdescription.vo.TbDescriptionVo;

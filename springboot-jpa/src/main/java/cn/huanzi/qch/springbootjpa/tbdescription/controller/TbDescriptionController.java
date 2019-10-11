@@ -1,6 +1,6 @@
 package cn.huanzi.qch.springbootjpa.tbdescription.controller;
 
-import cn.huanzi.qch.springbootjpa.common.controller.*;
+import cn.huanzi.qch.springbootjpa.common.controller.CommonController;
 import cn.huanzi.qch.springbootjpa.tbdescription.pojo.TbDescription;
 import cn.huanzi.qch.springbootjpa.tbdescription.service.TbDescriptionService;
 import cn.huanzi.qch.springbootjpa.tbdescription.vo.TbDescriptionVo;

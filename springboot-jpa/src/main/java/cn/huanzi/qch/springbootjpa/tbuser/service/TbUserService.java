@@ -1,6 +1,6 @@
 package cn.huanzi.qch.springbootjpa.tbuser.service;
 
-import cn.huanzi.qch.springbootjpa.common.service.*;
+import cn.huanzi.qch.springbootjpa.common.service.CommonService;
 import cn.huanzi.qch.springbootjpa.tbuser.pojo.TbUser;
 import cn.huanzi.qch.springbootjpa.tbuser.vo.TbUserVo;
 

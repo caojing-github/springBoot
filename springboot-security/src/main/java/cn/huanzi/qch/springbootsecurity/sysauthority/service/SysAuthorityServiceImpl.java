@@ -1,6 +1,6 @@
 package cn.huanzi.qch.springbootsecurity.sysauthority.service;
 
-import cn.huanzi.qch.springbootsecurity.common.service.*;
+import cn.huanzi.qch.springbootsecurity.common.service.CommonServiceImpl;
 import cn.huanzi.qch.springbootsecurity.sysauthority.pojo.SysAuthority;
 import cn.huanzi.qch.springbootsecurity.sysauthority.repository.SysAuthorityRepository;
 import cn.huanzi.qch.springbootsecurity.sysauthority.vo.SysAuthorityVo;

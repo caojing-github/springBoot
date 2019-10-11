@@ -1,7 +1,7 @@
 package cn.huanzi.qch.springbootmybatis.mapper;
 
 import cn.huanzi.qch.springbootmybatis.pojo.User;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 
 @Mapper

@@ -1,7 +1,7 @@
 package cn.huanzi.qch.springbootsecurity.sysuserauthority.service;
 
 import cn.huanzi.qch.springbootsecurity.common.pojo.Result;
-import cn.huanzi.qch.springbootsecurity.common.service.*;
+import cn.huanzi.qch.springbootsecurity.common.service.CommonServiceImpl;
 import cn.huanzi.qch.springbootsecurity.sysuserauthority.pojo.SysUserAuthority;
 import cn.huanzi.qch.springbootsecurity.sysuserauthority.repository.SysUserAuthorityRepository;
 import cn.huanzi.qch.springbootsecurity.sysuserauthority.vo.SysUserAuthorityVo;

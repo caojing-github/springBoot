@@ -1,6 +1,6 @@
 package cn.huanzi.qch.springbootsecurity.sysusermenu.controller;
 
-import cn.huanzi.qch.springbootsecurity.common.controller.*;
+import cn.huanzi.qch.springbootsecurity.common.controller.CommonController;
 import cn.huanzi.qch.springbootsecurity.sysusermenu.pojo.SysUserMenu;
 import cn.huanzi.qch.springbootsecurity.sysusermenu.service.SysUserMenuService;
 import cn.huanzi.qch.springbootsecurity.sysusermenu.vo.SysUserMenuVo;

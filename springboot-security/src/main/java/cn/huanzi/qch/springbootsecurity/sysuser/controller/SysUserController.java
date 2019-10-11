@@ -1,6 +1,6 @@
 package cn.huanzi.qch.springbootsecurity.sysuser.controller;
 
-import cn.huanzi.qch.springbootsecurity.common.controller.*;
+import cn.huanzi.qch.springbootsecurity.common.controller.CommonController;
 import cn.huanzi.qch.springbootsecurity.sysuser.pojo.SysUser;
 import cn.huanzi.qch.springbootsecurity.sysuser.service.SysUserService;
 import cn.huanzi.qch.springbootsecurity.sysuser.vo.SysUserVo;
