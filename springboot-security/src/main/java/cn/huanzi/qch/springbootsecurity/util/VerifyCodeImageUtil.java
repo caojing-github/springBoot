@@ -1,5 +1,6 @@
 package cn.huanzi.qch.springbootsecurity.util;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 /*

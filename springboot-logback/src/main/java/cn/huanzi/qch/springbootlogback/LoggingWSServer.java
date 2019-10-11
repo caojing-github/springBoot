@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.util.StringUtils;
 
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.BufferedReader;
 import java.io.FileReader;

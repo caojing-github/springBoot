@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -153,7 +154,9 @@ public class TestController {
         User user = null;
         SecurityContext ctx = SecurityContextHolder.getContext();
         Authentication auth = ctx.getAuthentication();
-        if (auth.getPrincipal() instanceof UserDetails) user = (User) auth.getPrincipal();
+        if (auth.getPrincipal() instanceof UserDetails) {
+            user = (User) auth.getPrincipal();
+        }
         SysUserVo sysUserVo = sysUserService.findByLoginName(user.getUsername()).getData();
         //隐藏部分属性
         sysUserVo.setPassword(null);

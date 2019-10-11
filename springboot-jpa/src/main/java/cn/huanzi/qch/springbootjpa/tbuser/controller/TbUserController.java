@@ -5,6 +5,8 @@ import cn.huanzi.qch.springbootjpa.tbuser.pojo.TbUser;
 import cn.huanzi.qch.springbootjpa.tbuser.service.TbUserService;
 import cn.huanzi.qch.springbootjpa.tbuser.vo.TbUserVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/tbUser/")
