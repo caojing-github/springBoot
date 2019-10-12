@@ -15,6 +15,9 @@ public class AsyncConfig {
 
     private static final int CORE_POOL_SIZE = 20;
 
+    /**
+     * " @Async会默认从线程池获取线程，当然也可以显式的指定@Async("asyncTaskExecutor") "
+     */
     @Bean("asyncTaskExecutor")
     public AsyncTaskExecutor asyncTaskExecutor() {
         ThreadPoolTaskExecutor asyncTaskExecutor = new ThreadPoolTaskExecutor();

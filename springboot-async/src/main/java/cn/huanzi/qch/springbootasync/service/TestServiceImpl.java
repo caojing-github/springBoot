@@ -30,8 +30,8 @@ public class TestServiceImpl implements TestService {
         System.out.println(Thread.currentThread().getName() + "：void asyncTask()，耗时：" + (endTime - startTime));
     }
 
-    @Async("asyncTaskExecutor")
     @Override
+    @Async("asyncTaskExecutor")
     public Future<String> asyncTask(String s) {
         long startTime = System.currentTimeMillis();
         try {
@@ -42,14 +42,15 @@ public class TestServiceImpl implements TestService {
         }
         long endTime = System.currentTimeMillis();
         System.out.println(Thread.currentThread().getName() + "：Future<String> asyncTask(String s)，耗时：" + (endTime - startTime));
+        // 封装返回异步结果
         return AsyncResult.forValue(s);
     }
 
-    @Async("asyncTaskExecutor")
-    @Transactional
     @Override
+    @Async("asyncTaskExecutor")
+    @Transactional(rollbackFor = Exception.class)
     public void asyncTaskForTransaction(Boolean exFlag) {
-        //新增一个用户
+        //  新增一个用户
         TbUser tbUser = new TbUser();
         tbUser.setUsername("huanzi-qch");
         tbUser.setPassword("123456");

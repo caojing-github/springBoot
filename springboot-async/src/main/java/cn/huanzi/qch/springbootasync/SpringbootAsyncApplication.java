@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.Future;
+
 @Component
-@EnableAsync//开启异步调用
+@EnableAsync    //  开启异步调用
 @SpringBootApplication
 public class SpringbootAsyncApplication {
 
@@ -23,18 +25,20 @@ public class SpringbootAsyncApplication {
 
     /**
      * 启动成功
+     *
      */
     @Bean
     public ApplicationRunner applicationRunner() {
         return applicationArguments -> {
             long startTime = System.currentTimeMillis();
             System.out.println(Thread.currentThread().getName() + "：开始调用异步业务");
-            //无返回值
+
+            //  无返回值
 //            testService.asyncTask();
 
-            //有返回值，但主线程不需要用到返回值
+            //  有返回值，但主线程不需要用到返回值
 //            Future<String> future = testService.asyncTask("huanzi-qch");
-            //有返回值，且主线程需要用到返回值
+            //  有返回值，且主线程需要用到返回值，虽然异步业务逻辑是由新线程执行，但如果在主线程操作返回值对象，主线程会等待，还是顺序执行
 //            System.out.println(Thread.currentThread().getName() + "：返回值：" + testService.asyncTask("huanzi-qch").get());
 
             //事务测试，事务正常提交

@@ -3,6 +3,7 @@ package cn.huanzi.qch.springbootasync.service;
 import java.util.concurrent.Future;
 
 public interface TestService {
+
     /**
      * 异步调用，无返回值
      */
