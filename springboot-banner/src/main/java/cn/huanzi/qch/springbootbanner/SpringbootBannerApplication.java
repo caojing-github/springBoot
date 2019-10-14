@@ -1,4 +1,4 @@
-package cn.huanzi.qch.springbootjarwar;
+package cn.huanzi.qch.springbootbanner;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

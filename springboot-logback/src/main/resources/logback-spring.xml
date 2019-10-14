@@ -66,7 +66,9 @@
         <logger level="WARN" name="com.netflix"/>
         <logger level="DEBUG" name="org.hibernate.SQL"/>
     </springProfile>
+
     <springProfile name="prod">
 
     </springProfile>
+
 </configuration>

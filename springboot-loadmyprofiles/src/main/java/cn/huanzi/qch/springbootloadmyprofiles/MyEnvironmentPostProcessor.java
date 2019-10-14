@@ -16,7 +16,9 @@ import java.util.Properties;
  */
 public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
-    //Properties对象
+    /**
+     * Properties对象
+     */
     private final Properties properties = new Properties();
 
     @Override
@@ -37,7 +39,9 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
         }
     }
 
-    //加载单个配置文件
+    /**
+     * 加载单个配置文件
+     */
     private PropertySource<?> loadProfiles(Resource resource) {
         if (!resource.exists()) {
             throw new IllegalArgumentException("资源" + resource + "不存在");

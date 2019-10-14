@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 @ServletComponentScan
 @WebFilter(filterName = "myCorsFilter", //过滤器名称
-    urlPatterns = "/cors/corsByMyCorsFilter",//url路径
+    urlPatterns = "/cors/corsByMyCorsFilter",//拦截路径
     initParams = {
         @WebInitParam(name = "allowOrigin", value = "https://www.cnblogs.com"),//允许的请求源，可用,分隔，*表示所有
         @WebInitParam(name = "allowMethods", value = "POST"),//允许的请求方法，可用,分隔，*表示所有

@@ -1,0 +1,10 @@
+### 登录
+GET http://localhost:10092/websocket/login/caojing
+
+### 登出
+GET http://localhost:10092/websocket/logout/caojing
+
+### 获取在线用户
+GET http://localhost:10092/websocket/getOnlineList?username=caojing
+
+###

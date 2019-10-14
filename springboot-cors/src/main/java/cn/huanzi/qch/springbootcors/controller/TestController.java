@@ -2,8 +2,8 @@ package cn.huanzi.qch.springbootcors.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("cors/")
 @RestController
+@RequestMapping("cors/")
 public class TestController {
     /*
        通过注解配置CORS跨域测试

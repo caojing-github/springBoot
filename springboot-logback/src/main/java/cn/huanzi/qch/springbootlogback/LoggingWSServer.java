@@ -40,6 +40,7 @@ public class LoggingWSServer {
      * 连接建立成功调用的方法
      */
     @OnOpen
+    @SuppressWarnings("all")
     public void onOpen(Session session) {
         //添加到集合中
         sessionMap.put(session.getId(), session);

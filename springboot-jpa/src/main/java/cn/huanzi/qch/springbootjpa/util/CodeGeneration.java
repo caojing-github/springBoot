@@ -10,12 +10,12 @@ import java.util.List;
 /**
  * 自动生成代码
  */
-public class CodeDOM {
+public class CodeGeneration {
 
     /**
      * 构造参数，出入表名
      */
-    private CodeDOM(String tableName) {
+    private CodeGeneration(String tableName) {
         this.tableName = tableName;
         basePackage_ = "cn\\huanzi\\qch\\springbootjpa\\";
         package_ = basePackage_ + StringUtil.camelCaseName(tableName).toLowerCase() + "\\";
@@ -531,7 +531,7 @@ public class CodeDOM {
     public static void main(String[] args) {
         String[] tables = {"tb_description"};
         for (String table : tables) {
-            String msg = new CodeDOM(table).create();
+            String msg = new CodeGeneration(table).create();
             System.out.println(msg);
         }
     }

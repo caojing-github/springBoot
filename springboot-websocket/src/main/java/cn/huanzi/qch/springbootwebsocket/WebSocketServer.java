@@ -1,6 +1,7 @@
 package cn.huanzi.qch.springbootwebsocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * WebSocket服务
  */
+@Slf4j
 @RestController
 @RequestMapping("/websocket")
 @ServerEndpoint(value = "/websocket/{username}", configurator = MyEndpointConfigure.class)
@@ -35,12 +37,6 @@ public class WebSocketServer {
      * 在线用户的Map集合，key：用户名，value：Session对象
      */
     private static Map<String, Session> sessionMap = new ConcurrentHashMap<>();
-
-    /**
-     * 注入其他类（换成自己想注入的对象）
-     */
-//    @Autowired
-//    private UserService userService;
 
     /**
      * 连接建立成功调用的方法
@@ -62,10 +58,10 @@ public class WebSocketServer {
      */
     @OnClose
     public void onClose(Session session) {
-        //下线用户名
+        // 下线用户名
         String logoutUserName = "";
 
-        //从webSocketMap删除下线用户
+        // 从webSocketMap删除下线用户
         for (Entry<String, Session> entry : sessionMap.entrySet()) {
             if (entry.getValue() == session) {
                 sessionMap.remove(entry.getKey());
@@ -73,10 +69,10 @@ public class WebSocketServer {
                 break;
             }
         }
-        //在线人数减减
+        // 在线人数减减
         WebSocketServer.onlineCount--;
 
-        //通知除了自己之外的所有人
+        // 通知除了自己之外的所有人
         sendOnlineCount(session, "{'type':'onlineCount','onlineCount':" + WebSocketServer.onlineCount + ",username:'" + logoutUserName + "'}");
     }
 
@@ -119,6 +115,7 @@ public class WebSocketServer {
      */
     @OnError
     public void onError(Session session, Throwable error) {
+        log.error("WebSocket服务异常", error);
         error.printStackTrace();
     }
 
@@ -141,10 +138,10 @@ public class WebSocketServer {
      * 私聊
      */
     private void privateChat(Session session, Map tarUser, HashMap hashMap) throws IOException {
-        //获取目标用户的session
+        // 获取目标用户的session
         Session tarUserSession = sessionMap.get(tarUser.get("username"));
 
-        //如果不在线则发送“对方不在线”回来源用户
+        // 如果不在线则发送“对方不在线”回来源用户
         if (tarUserSession == null) {
             session.getBasicRemote().sendText("{\"type\":\"0\",\"message\":\"对方不在线\"}");
         } else {
@@ -187,8 +184,8 @@ public class WebSocketServer {
      */
     @RequestMapping("/getOnlineList")
     private List<String> getOnlineList(String username) {
-        List<String> list = new ArrayList<String>();
-        //遍历webSocketMap
+        List<String> list = new ArrayList<>();
+        // 遍历webSocketMap
         for (Entry<String, Session> entry : WebSocketServer.sessionMap.entrySet()) {
             if (!entry.getKey().equals(username)) {
                 list.add(entry.getKey());
