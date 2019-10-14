@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextAware;
 import javax.websocket.server.ServerEndpointConfig;
 
 /**
+ * 可以使用spring容器工具类取容器中的对象，就不必使用 @Autowired 注入对象
  * 解决注入其他类的问题，详情参考这篇帖子：webSocket无法注入其他类：https://blog.csdn.net/tornadojava/article/details/78781474
  */
 public class MyEndpointConfigure extends ServerEndpointConfig.Configurator implements ApplicationContextAware {

@@ -33,8 +33,8 @@ public class LoggingWSServer {
     /**
      * 连接集合
      */
-    private static Map<String, Session> sessionMap = new ConcurrentHashMap<String, Session>();
-    private static Map<String, Integer> lengthMap = new ConcurrentHashMap<String, Integer>();
+    private static Map<String, Session> sessionMap = new ConcurrentHashMap<>();
+    private static Map<String, Integer> lengthMap = new ConcurrentHashMap<>();
 
     /**
      * 连接建立成功调用的方法
@@ -42,28 +42,30 @@ public class LoggingWSServer {
     @OnOpen
     @SuppressWarnings("all")
     public void onOpen(Session session) {
-        //添加到集合中
-        sessionMap.put(session.getId(), session);
-        lengthMap.put(session.getId(), 1);//默认从第一行开始
 
-        //获取日志信息
+        // 添加到集合中
+        sessionMap.put(session.getId(), session);
+        // 默认从第一行开始
+        lengthMap.put(session.getId(), 1);
+
+        // 获取日志信息
         new Thread(() -> {
             log.info("LoggingWebSocketServer 任务开始");
             boolean first = true;
             while (sessionMap.get(session.getId()) != null) {
                 BufferedReader reader = null;
                 try {
-                    //日志文件路径，获取最新的
+                    // 日志文件路径，获取最新的
                     String filePath = System.getProperty("user.home") + "/log/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + applicationName + ".log";
 
-                    //字符流
+                    // 字符流
                     reader = new BufferedReader(new FileReader(filePath));
                     Object[] lines = reader.lines().toArray();
 
-                    //只取从上次之后产生的日志
+                    // 只取从上次之后产生的日志
                     Object[] copyOfRange = Arrays.copyOfRange(lines, lengthMap.get(session.getId()), lines.length);
 
-                    //对日志进行着色，更加美观  PS：注意，这里要根据日志生成规则来操作
+                    // 对日志进行着色，更加美观  PS：注意，这里要根据日志生成规则来操作
                     for (int i = 0; i < copyOfRange.length; i++) {
                         String line = (String) copyOfRange[i];
                         //先转义

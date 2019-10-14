@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.Future;
-
 @Component
 @EnableAsync    //  开启异步调用
 @SpringBootApplication
@@ -25,7 +23,6 @@ public class SpringbootAsyncApplication {
 
     /**
      * 启动成功
-     *
      */
     @Bean
     public ApplicationRunner applicationRunner() {

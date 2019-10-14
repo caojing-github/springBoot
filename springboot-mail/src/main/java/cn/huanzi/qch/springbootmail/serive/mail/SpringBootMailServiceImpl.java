@@ -39,7 +39,7 @@ class SpringBootMailServiceImpl implements SpringBootMailService {
     @Override
     public void sendHtmlMail(String to, String subject, String content) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        //true表示需要创建一个multipart message
+        // true表示需要创建一个multipart message
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setFrom(from);
         helper.setTo(to);
