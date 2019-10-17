@@ -1,0 +1,4 @@
+### 获取 access_token https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/access-token/auth.getAccessToken.html
+GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx009010b51a8abcf3&secret=1b4aa8e322393a5a84f7f3228d98908c
+
+###
