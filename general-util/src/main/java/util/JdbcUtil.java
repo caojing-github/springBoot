@@ -20,7 +20,6 @@ import static util.JdbcUtil.DataSource.PUSHER_DEV;
  * @date 2019/10/20 16:18
  */
 @Slf4j
-@SuppressWarnings("all")
 public final class JdbcUtil {
 
     /**
@@ -55,17 +54,9 @@ public final class JdbcUtil {
             "7JxwEab#amuDVXv"
         );
 
-        private final String url;
-        private final String username;
-        private final String password;
-
         private DruidDataSource dataSource;
-        public DruidPooledConnection connection;
 
         DataSource(String url, String username, String password) {
-            this.url = url;
-            this.username = username;
-            this.password = password;
             this.dataSource = initialDataSource(url, username, password);
         }
 

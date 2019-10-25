@@ -12,7 +12,7 @@ import redis.clients.jedis.Tuple;
 import java.io.Serializable;
 import java.util.*;
 
-import static util.RedisCache.RedisConfig.*;
+import static util.RedisCache.RedisConfig.DEV;
 
 /**
  * redis工具类
