@@ -1,10 +1,18 @@
 package util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static util.JdbcUtil.DataSource.PUSHER_DEV;
 
 /**
  * 并发请求工具
@@ -18,12 +26,12 @@ public class ConcurrentRequest {
     /**
      * 请求次数
      */
-    private static final int n = 10;
+    private static final int n = 1;
 
     /**
      * 并发数
      */
-    private static final int c = 10;
+    private static final int c = 50;
 
     /**
      * 发送http请求
@@ -41,25 +49,66 @@ public class ConcurrentRequest {
         start(() -> {
             // 发起请求
             try {
-                demo1();
+                demo2();
             } catch (Exception e) {
                 log.error("", e);
             }
         });
     }
 
+    String token = "eyJhbGciOiJIUzI1NiJ9.eyJvZmZpY2VfaWQiOiIxYTcxOGU4Y2ViZmExMWU5OGFiMjdjZDMwYWViMTQ5NCIsImRldmljZVR5cGUiOiJ4Y3giLCJvZmZpY2VfbmFtZSI6IuaOqOWuoiIsInVzZXJfaWQiOiIyNDQ2MzIwMmVmZjgxMWU5OGFiMjdjZDMwYWViMTQ5NCIsImxvZ2luVHlwZSI6IjEiLCJ1c2VyX25hbWUiOiLmoZHojaPojaMiLCJpc3MiOiJmaXNjYWwtdGF4IiwiZXhwIjoxNTg5ODAxODY1NjI5LCJpYXQiOjE1NzE4MDE4NjU2MjksIm9mZmljZVR5cGUiOm51bGx9.ELEhVQ-cV5Wn14r_mFs5sexyU6kJNH5LBkkwXY5yKwk";
+
     /**
      * 添加客户跟进人
      */
     private void demo1() {
         JSONArray jsonArray = new JSONArray();
-        jsonArray.add("f09d1938f08711e98ab27cd30aeb1494");
-        jsonArray.add("495543f5f00611e98ab27cd30aeb1494");
+        jsonArray.add("1a6b7f56ebfa11e98ab27cd30aeb1494");
+        jsonArray.add("1a6b7f56ebfa11e98ab27cd30aeb1494");
 
-        String response = HttpUtils.httpPostJson("http://localhost:9186/pusher/api/v1/crm/saveCharge?id=ab7b6b69f0b211e98ab27cd30aeb1494", jsonArray.toJSONString());
+        String response = HttpUtils.httpPostJson("http://localhost:9186/pusher/api/v1/crm/saveFollow?id=aeb83a11f0b211e98ab27cd30aeb1494", jsonArray.toJSONString());
         log.info(response);
 
 //        log.info(EntityUtils.toString(httpResponse.getEntity()));
+    }
+
+    /**
+     * 新建线索
+     */
+    private void demo2() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", 1);
+        jsonObject.put("app_type", 1);
+        jsonObject.put("name", "桑荣荣_" + ThreadLocalRandom.current().nextInt(100, 200));
+        jsonObject.put("enterpriseName", "桑荣荣公司");
+        jsonObject.put("position", "案源前端");
+        jsonObject.put("department", "案源事业部");
+        jsonObject.put("phone", "18553378628");
+        jsonObject.put("phone", "telephone");
+        jsonObject.put("email", "桑荣荣@icourt.cc");
+        jsonObject.put("wechat", "18553378628");
+        jsonObject.put("region", "北京");
+        jsonObject.put("address", "北京");
+        jsonObject.put("unionId", UUID.randomUUID().toString().replace("-", ""));
+
+        String response = HttpUtils.httpPostJson("http://localhost:9186/pusher/api/v1/crm/saveClueOrCustomer", jsonObject.toJSONString(), token);
+        log.info(JSON.toJSONString(response, true));
+
+    }
+
+    /**
+     * 线索转客户
+     */
+    private void demo3() throws Exception {
+        String sql = "select id from pusher_client_info where create_id = 'f615122af3e711e98ab27cd30aeb1494' and type = 0";
+
+        List<Map<String, Object>> list = JdbcUtil.executeQuery(PUSHER_DEV.getConnection(), sql, null);
+        for (int i = 0; i < list.size(); i += 2) {
+            String id = list.get(i).get("id").toString();
+
+            String response = HttpUtils.httpPostJson("http://localhost:9186/pusher/api/v1/crm/xcxToCustomer?id=" + id, "{}", token);
+            log.info(JSON.toJSONString(response, true));
+        }
     }
 
     public static void start(RequestFunction function) throws Exception {

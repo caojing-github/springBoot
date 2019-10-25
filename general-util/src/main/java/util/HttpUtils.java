@@ -200,7 +200,7 @@ public class HttpUtils {
             post.setRequestHeader("Connection", "Keep-Alive");
         }
         if (Objects.nonNull(headers)) {
-            for (Map.Entry<String, String> entry:headers.entrySet()) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
                 post.setRequestHeader(entry.getKey(), entry.getValue());
             }
         }

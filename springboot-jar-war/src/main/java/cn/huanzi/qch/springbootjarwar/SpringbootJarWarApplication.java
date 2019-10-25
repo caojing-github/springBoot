@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 //war包
 @SpringBootApplication
 public class SpringbootJarWarApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
+
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(SpringbootJarWarApplication.class);
