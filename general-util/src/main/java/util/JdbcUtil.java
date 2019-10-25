@@ -66,6 +66,18 @@ public final class JdbcUtil {
     }
 
     /**
+     * 根据环境变量获取DataSource
+     */
+    public static DataSource getByEnv(String env) {
+        if ("dev".equals(env)) {
+            return DataSource.PUSHER_DEV;
+        } else if ("test".equals(env)) {
+            return DataSource.PUSHER_TEST;
+        }
+        return DataSource.PUSHER_DEV;
+    }
+
+    /**
      * 推客-插入
      */
     @Test
@@ -118,7 +130,7 @@ public final class JdbcUtil {
      */
     private static synchronized DruidDataSource initialDataSource(String url, String username, String password) {
         DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);

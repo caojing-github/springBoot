@@ -2,7 +2,7 @@ package demo;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.apache.commons.lang3.ArrayUtils;
 import util.JdbcUtil;
 import util.RedisCache;
 
@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat;
-import static util.JdbcUtil.DataSource.PUSHER_TEST;
 
 /**
  * RedisCache测试类
@@ -29,9 +28,10 @@ public class RedisCacheDemo {
     /**
      * 获取token
      */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void test20191022204927() throws Exception {
+    public static void test20191022204927(String env) throws Exception {
+
+        // 初始化redis
+        RedisCache.initialPool(env);
 
         List<Map> list = RedisCache.keys("pusher:user:token*list")
             .stream()
@@ -45,7 +45,7 @@ public class RedisCacheDemo {
                 Map<String, Object> user = null;
                 Map<String, Object> office = null;
                 try {
-                    List<Map<String, Object>> list1 = JdbcUtil.executeQuery(PUSHER_TEST.getConnection(), sql, null);
+                    List<Map<String, Object>> list1 = JdbcUtil.executeQuery(JdbcUtil.getByEnv(env).getConnection(), sql, null);
                     if (list1.isEmpty()) {
                         return null;
                     }
@@ -57,7 +57,7 @@ public class RedisCacheDemo {
 
                     String sql2 = "select * from pusher_office a, pusher_user b where a.id = b.pusher_office_id and b.id = '" + userId + "'";
 
-                    List<Map<String, Object>> list2 = JdbcUtil.executeQuery(PUSHER_TEST.getConnection(), sql2, null);
+                    List<Map<String, Object>> list2 = JdbcUtil.executeQuery(JdbcUtil.getByEnv(env).getConnection(), sql2, null);
                     if (list2.isEmpty()) {
                         return null;
                     }
@@ -79,7 +79,7 @@ public class RedisCacheDemo {
             }).filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        FileOutputStream fos = new FileOutputStream(new File("/Users/icourt/IdeaProjects/springBoot/general-util/src/main/resources/token.txt"));
+        FileOutputStream fos = new FileOutputStream(new File("token.txt"));
 
         // 以人类可读方式打印
         log.info(JSON.toJSONString(list, true));
@@ -88,13 +88,12 @@ public class RedisCacheDemo {
         JSON.writeJSONString(fos, list, PrettyFormat);
     }
 
-    @Test
-    public void test20191023004619() {
-        RedisCache.onceLock("66666666");
-    }
-
     public static void main(String[] args) throws Exception {
-        new RedisCacheDemo().test20191022204927();
+        if (ArrayUtils.isEmpty(args)) {
+            test20191022204927("dev");
+        } else {
+            test20191022204927(args[0]);
+        }
     }
 
 }

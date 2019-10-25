@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import static util.RedisCache.RedisConfig.DEV;
+import static util.RedisCache.RedisConfig.TEST;
 
 /**
  * redis工具类
@@ -31,6 +32,19 @@ public class RedisCache {
          * test 9 号库
          */
         DEV(
+            "192.168.255.2",
+            6379,
+            null,
+            200,
+            10000,
+            8
+        ),
+
+        /**
+         * dev 8 号库
+         * test 9 号库
+         */
+        TEST(
             "192.168.255.2",
             6379,
             null,
@@ -70,6 +84,18 @@ public class RedisCache {
 
     private static JedisPool jedisPool;
 
+    /**
+     * 根据环境变量获取 RedisConfig
+     */
+    private static RedisConfig getRedisConfigByEnv(String env) {
+        if ("dev".equals(env)) {
+            return DEV;
+        } else if ("test".equals(env)) {
+            return TEST;
+        }
+        return DEV;
+    }
+
     private static void initialPool() {
 
         try {
@@ -83,6 +109,32 @@ public class RedisCache {
             config.setSoftMinEvictableIdleTimeMillis(120000);
 
             jedisPool = new JedisPool(config, host, port, 100000, StringUtils.isBlank(password) ? null : password, datebase);
+
+        } catch (Exception e) {
+            log.error("redis连接池初始化失败", e);
+        }
+    }
+
+    /**
+     * 根据环境变量初始化Redis
+     */
+    public static void initialPool(String env) {
+        RedisConfig redisConfig = getRedisConfigByEnv(env);
+        try {
+            GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+            config.setMaxIdle(redisConfig.maxIdle);
+            config.setMaxWaitMillis(redisConfig.maxWait);
+            config.setTestOnReturn(false);
+            config.setTestWhileIdle(false);
+            config.setBlockWhenExhausted(true);
+            config.setLifo(false);
+            config.setSoftMinEvictableIdleTimeMillis(120000);
+
+            jedisPool = new JedisPool(
+                config, redisConfig.host, redisConfig.port,
+                100000, StringUtils.isBlank(redisConfig.password) ? null : redisConfig.password,
+                redisConfig.datebase
+            );
 
         } catch (Exception e) {
             log.error("redis连接池初始化失败", e);
