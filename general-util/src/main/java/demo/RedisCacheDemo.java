@@ -79,7 +79,8 @@ public class RedisCacheDemo {
             }).filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        FileOutputStream fos = new FileOutputStream(new File("token.txt"));
+//        FileOutputStream fos = new FileOutputStream(new File("token.txt"));
+        FileOutputStream fos = new FileOutputStream(new File("/Users/icourt/IdeaProjects/springBoot/general-util/token.txt"));
 
         // 以人类可读方式打印
         log.info(JSON.toJSONString(list, true));
@@ -89,6 +90,7 @@ public class RedisCacheDemo {
     }
 
     public static void main(String[] args) throws Exception {
+        args = new String[]{"dev"};
         if (ArrayUtils.isEmpty(args)) {
             test20191022204927("dev");
         } else {

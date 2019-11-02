@@ -142,6 +142,18 @@ public class RedisCache {
     }
 
     /**
+     * 获取JedisPool
+     *
+     * @return JedisPool
+     */
+    public static synchronized JedisPool getJedisPool() {
+        if (jedisPool == null) {
+            initialPool();
+        }
+        return jedisPool;
+    }
+
+    /**
      * 获取Jedis实例
      *
      * @return Jedis
