@@ -49,14 +49,14 @@ public class ConcurrentRequest {
         start(() -> {
             // 发起请求
             try {
-                demo2();
+                demo4();
             } catch (Exception e) {
                 log.error("", e);
             }
         });
     }
 
-    String token = "eyJhbGciOiJIUzI1NiJ9.eyJvZmZpY2VfaWQiOiIxYTcxOGU4Y2ViZmExMWU5OGFiMjdjZDMwYWViMTQ5NCIsImRldmljZVR5cGUiOiJ4Y3giLCJvZmZpY2VfbmFtZSI6IuaOqOWuoiIsInVzZXJfaWQiOiIyNDQ2MzIwMmVmZjgxMWU5OGFiMjdjZDMwYWViMTQ5NCIsImxvZ2luVHlwZSI6IjEiLCJ1c2VyX25hbWUiOiLmoZHojaPojaMiLCJpc3MiOiJmaXNjYWwtdGF4IiwiZXhwIjoxNTg5ODAxODY1NjI5LCJpYXQiOjE1NzE4MDE4NjU2MjksIm9mZmljZVR5cGUiOm51bGx9.ELEhVQ-cV5Wn14r_mFs5sexyU6kJNH5LBkkwXY5yKwk";
+    String token = "eyJhbGciOiJIUzI1NiJ9.eyJvZmZpY2VfaWQiOiIxYTcxOGU4Y2ViZmExMWU5OGFiMjdjZDMwYWViMTQ5NCIsImRldmljZVR5cGUiOiJ4Y3giLCJvZmZpY2VfbmFtZSI6IuaOqOWuoiIsInVzZXJfaWQiOiIxYTZiN2Y1NmViZmExMWU5OGFiMjdjZDMwYWViMTQ5NSIsImxvZ2luVHlwZSI6IjEiLCJ1c2VyX25hbWUiOiLotLrnpLw1NTUiLCJpc3MiOiJmaXNjYWwtdGF4IiwiZXhwIjoxNTkwMzQ5NDYxNzg3LCJpYXQiOjE1NzIzNDk0NjE3ODcsIm9mZmljZVR5cGUiOm51bGx9.N-Ngpo1zUixNEwESSJVh2oL561Z4PXp1OUoAVwIwcpU";
 
     /**
      * 添加客户跟进人
@@ -109,6 +109,15 @@ public class ConcurrentRequest {
             String response = HttpUtils.httpPostJson("http://localhost:9186/pusher/api/v1/crm/xcxToCustomer?id=" + id, "{}", token);
             log.info(JSON.toJSONString(response, true));
         }
+    }
+
+    /**
+     * 小程序-线索列表
+     */
+    @Test
+    public void demo4() {
+        String response = HttpUtils.httpPostJson("http://localhost:9186/pusher/api/v1/crm/getXcxClueList/false?pageIndex=1&pageSize=1000", "{}", token);
+        log.info(JSON.toJSONString(response, true));
     }
 
     public static void start(RequestFunction function) throws Exception {

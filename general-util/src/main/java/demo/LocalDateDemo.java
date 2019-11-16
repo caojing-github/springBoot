@@ -24,6 +24,17 @@ public class LocalDateDemo {
     @Test
     public void test20191023102502() {
 
+        // 毫秒数
+        long x = System.currentTimeMillis() - Instant.now().toEpochMilli();
+        log.info(x + "");
+
+        // 10天前
+        long y = System.currentTimeMillis() - Instant.now().minus(Duration.ofDays(10)).toEpochMilli() - 10 * 24 * 3600 * 1000;
+        log.info(y + "");
+
+        log.info(System.currentTimeMillis() / 1000 + "");
+        log.info(System.currentTimeMillis() + "");
+
         // 获取当前年月日
         LocalDate localDate = LocalDate.now();
         //构造指定的年月日

@@ -8,10 +8,13 @@ import lombok.extern.slf4j.Slf4j;
  * 驼峰与下划线及各种格式互转
  */
 @Slf4j
-public class HumpDemo {
+public class CaseFormatDemo {
 
     public static void main(String[] args) {
-        // 驼峰转下划线, userName -> user_name
+        // 下划线转驼峰
+        Converter<String, String> c = CaseFormat.LOWER_UNDERSCORE.converterTo(CaseFormat.LOWER_CAMEL);
+        log.info(c.convert("is_subscribe"));
+
         Converter<String, String> converter = CaseFormat.LOWER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE);
         // 输出: user_name
         log.info(converter.convert("userName"));
