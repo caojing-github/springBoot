@@ -1,6 +1,10 @@
 package util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
+import com.thoughtworks.xstream.io.xml.XppDriver;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -156,5 +160,21 @@ public class XmlUtil {
         return null;
     }
 
+    /**
+     * xml转实体类
+     */
+    public static <T> T xmlToBean(String xml, Class<T> cls) {
+        XStream xstream = new XStream(new DomDriver());
+        xstream.processAnnotations(cls);
+        return (T) xstream.fromXML(xml);
+    }
 
+    /**
+     * 实体类转xml
+     */
+    public static String beanToXml(Object obj) {
+        XStream xStream = new XStream(new XppDriver(new XmlFriendlyNameCoder("_-", "_")));
+        xStream.processAnnotations(obj.getClass());
+        return xStream.toXML(obj);
+    }
 }

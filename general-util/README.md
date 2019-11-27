@@ -24,3 +24,21 @@ Base64工具依赖
 ```
 >将byte[]转换为Base64String
 * Base64.encodeBase64String(byte[] binaryData)
+
+二进制上传文件
+```java
+    /**
+     * 二进制上传文件
+     *
+     * @author CaoJing
+     * @date 2019/10/9 15:20
+     */
+    @PostMapping(value = "/uploadFile2")
+    @Transactional(rollbackFor = Exception.class)
+    public Result uploadFile2(HttpServletRequest request) throws IOException {
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        Result result = Result.success("上传文件成功");
+        result.setData(ossService.uploadFileAutoType(request.getInputStream(), uuid, uuid + ".mp3").get(uuid));
+        return result;
+    }
+```
