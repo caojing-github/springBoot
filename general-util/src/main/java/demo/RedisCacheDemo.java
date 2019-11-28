@@ -3,6 +3,7 @@ package demo;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Test;
 import util.JdbcUtil;
 import util.RedisCache;
 
@@ -96,6 +97,17 @@ public class RedisCacheDemo {
         } else {
             test20191022204927(args[0]);
         }
+    }
+
+    /**
+     * 一次性锁测试
+     */
+    @Test
+    public void test20191128164924() throws InterruptedException {
+        System.out.println(RedisCache.onceLock("caojing666", 4));
+        System.out.println(RedisCache.onceLock("caojing666", 4));
+        Thread.sleep(4 * 1000);
+        System.out.println(RedisCache.isExists("autoReleaseLock:caojing666"));
     }
 
 }

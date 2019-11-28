@@ -1,5 +1,6 @@
 package util;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -8,6 +9,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.Tuple;
+import redis.clients.jedis.params.SetParams;
 
 import java.io.Serializable;
 import java.util.*;
@@ -241,9 +243,10 @@ public class RedisCache {
     /**
      * 一次性锁（适用于只要求执行一次）
      */
-    public static boolean onceLock(String key) {
-        if (setStringIfNotExist("autoReleaseLock:" + key, "")) {
-            setString("autoReleaseLock:" + key, "", 5 * 60);
+    public static boolean onceLock(String key, int seconds) {
+        Jedis jedis = getJedis();
+        SetParams setParams = new SetParams().nx().ex(seconds);
+        if ("OK".equals(jedis.set("autoReleaseLock:" + key, "", setParams))) {
             return true;
         }
         return false;
@@ -329,26 +332,12 @@ public class RedisCache {
     }
 
     /**
-     * 将对象存入redis
-     *
-     * @param key    键名
-     * @param object 对象
-     */
-    public static <T extends Serializable> void writeObject(String key, T object) {
-        Jedis jedis = getJedis();
-        if (null != object) {
-            jedis.set(key.getBytes(), SerializeUtil.serialize(object));
-        }
-        returnResource(jedis);
-    }
-
-    /**
      * 这个支持存集合
      */
     public static void writeObject(String key, Object object) {
         Jedis jedis = getJedis();
         if (null != object) {
-            jedis.set(key.getBytes(), SerializeUtil.serialize(object));
+            jedis.set(key.getBytes(), JSON.toJSONBytes(object));
         }
         returnResource(jedis);
     }
@@ -384,13 +373,13 @@ public class RedisCache {
      * @param object  待存对象
      * @return
      */
-    public static <T extends Serializable> void writeObject(String key, T object, int seconds) {
+    public static void writeObject(String key, Object object, int seconds) {
         Jedis jedis = getJedis();
         if (null != object) {
             if (seconds <= 0) {
-                jedis.set(key.getBytes(), SerializeUtil.serialize(object));
+                jedis.set(key.getBytes(), JSON.toJSONBytes(object));
             } else {
-                jedis.setex(key.getBytes(), seconds, SerializeUtil.serialize(object));
+                jedis.setex(key.getBytes(), seconds, JSON.toJSONBytes(object));
             }
         }
 
@@ -410,8 +399,7 @@ public class RedisCache {
         if (null == content || content.length == 0) {
             return null;
         }
-        T t = (T) SerializeUtil.unserialize(content);
-        return t;
+        return JSON.parseObject(content, clazz);
     }
 
     /**
