@@ -1,4 +1,4 @@
-package demo.hutool;
+package util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

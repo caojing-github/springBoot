@@ -1,6 +1,5 @@
 package demo;
 
-import demo.hutool.SpringContextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;

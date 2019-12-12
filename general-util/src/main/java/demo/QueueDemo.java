@@ -2,6 +2,7 @@ package demo;
 
 import org.junit.Test;
 
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 /**
@@ -26,6 +27,23 @@ public class QueueDemo {
             if (i != heap.poll()) {
                 System.out.println(i);
             }
+        }
+    }
+
+    /**
+     * 队列"先进先出"
+     */
+    @Test
+    public void test20191207152634() {
+        LinkedList list = new LinkedList();
+        list.add(0);
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        while (!list.isEmpty()) {
+            Object remove = list.remove();
+            System.out.println(remove);
         }
     }
 }
