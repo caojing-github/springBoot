@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 描述
+ * Map方法操作示例
  *
  * @author CaoJing
  * @date 2019/12/12 16:00
@@ -29,7 +29,6 @@ public class MapDemo {
         String keyH = "H";
         myMap.put(keyA, "str01A");
         myMap.put(keyB, "str01B");
-//        myMap.put(keyC, "str01C");
         myMap.put(keyC, null);
 
         System.out.println(myMap);
