@@ -27,6 +27,7 @@
         <module>springboot-thymeleaf</module>
         <module>springboot-timer</module>
         <module>springboot-websocket</module>
+        <module>springboot-kafka</module>
     </modules>
     <packaging>pom</packaging>
 
