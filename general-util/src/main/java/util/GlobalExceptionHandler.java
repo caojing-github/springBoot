@@ -3,6 +3,9 @@ package util;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,12 +16,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +40,17 @@ import static util.ThreadPoolManager.THREAD_POOL;
  */
 @Slf4j
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
+
+    /**
+     * 发件人
+     */
+    private static final String from = "caojing@icourt.cc";
+
+    /**
+     * 收件人
+     */
+    private static final String[] to = {"caojing@icourt.cc", "dujiang@icourt.cc"};
 
     /**
      * 中文字符范围
@@ -41,21 +58,24 @@ public class GlobalExceptionHandler {
     private static final Pattern CHINESE_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
 
     /**
-     * 发件人
+     * 当前线程请求体
      */
-    public static final String from = "caojing@icourt.cc";
-
-    /**
-     * 收件人
-     */
-    public static final String[] to = {"caojing@icourt.cc", "dujiang@icourt.cc"};
+    private static final ThreadLocal<String> REQUEST_BODY = new ThreadLocal<>();
 
     /**
      * 未捕获异常会在这处理
      */
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public Result<Object> exceptionErrorHandler(Exception e) {
+    public Result<Object> exceptionErrorHandler(HttpServletRequest request, Exception e) {
+
+        String method = request.getMethod();
+        String url = getUrl(request);
+        String token = request.getHeader("token");
+        String body = REQUEST_BODY.get();
+
+        log.error("{} {} token:{} 请求体:{}", method, url, token, body);
+        REQUEST_BODY.remove();
 
         Result<Object> r = new Result<>();
 
@@ -117,7 +137,9 @@ public class GlobalExceptionHandler {
             e.printStackTrace(printWriter);
             String errorMsg = stringWriter.toString();
 
-            sendErrorMail(e.getMessage(), errorMsg);
+            String content = String.format("%s %s token:%s 请求体:%n%s%n%s", method, url, token, body, errorMsg);
+
+            sendErrorMail(e.getMessage(), content);
 
             // 提取错误中文信息
             if (isContainChinese(errorMsg)) {
@@ -325,6 +347,45 @@ public class GlobalExceptionHandler {
             sb.append("参数").append(i + 1).append(":").append(JSON.toJSONString(arg[i]));
         }
         return sb.toString();
+    }
+
+    /**
+     * 获取请求的url
+     */
+    private static String getUrl(HttpServletRequest request) {
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        StringBuilder builder = new StringBuilder(request.getRequestURL());
+        builder.append("?");
+        for (String key : parameterMap.keySet()) {
+            String value = request.getParameter(key);
+            builder.append(key);
+            builder.append("=");
+            builder.append(value);
+            builder.append("&");
+        }
+        int indexOf = builder.lastIndexOf("&");
+        if (indexOf != -1) {
+            builder.deleteCharAt(indexOf);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * 是否拦截请求体
+     */
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return true;
+    }
+
+    /**
+     * 读取参数后执行
+     */
+    @Override
+    public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType,
+                                Class<? extends HttpMessageConverter<?>> converterType) {
+        REQUEST_BODY.set(JSON.toJSONString(body));
+        return body;
     }
 
     @Test
