@@ -2,8 +2,10 @@ package util;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.validation.ConstraintViolationException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,6 +39,16 @@ public class GlobalExceptionHandler {
      * 中文字符范围
      */
     private static final Pattern CHINESE_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
+
+    /**
+     * 发件人
+     */
+    public static final String from = "caojing@icourt.cc";
+
+    /**
+     * 收件人
+     */
+    public static final String[] to = {"caojing@icourt.cc", "dujiang@icourt.cc"};
 
     /**
      * 未捕获异常会在这处理
@@ -154,37 +168,70 @@ public class GlobalExceptionHandler {
      */
     public static void sendMail(String subject, String content) {
         THREAD_POOL.submit(() -> {
-            Properties properties = new Properties();
-            // 开启认证
-            properties.setProperty("mail.smtp.auth", "true");
-            // 启用调试
-//            properties.setProperty("mail.debug", "true");
-            // 设置链接超时
-            properties.setProperty("mail.smtp.timeout", "25000");
-            // 设置端口
-            properties.setProperty("mail.smtp.port", "465");
-            // 设置ssl端口
-            properties.setProperty("mail.smtp.socketFactory.port", "465");
-            properties.setProperty("mail.smtp.socketFactory.fallback", "false");
-            properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-
-            JavaMailSenderImpl sender = new JavaMailSenderImpl();
-            sender.setHost("smtp.exmail.qq.com");
-            sender.setDefaultEncoding("UTF-8");
-            sender.setUsername("caojing@icourt.cc");
-            sender.setPassword("i113234CJ");
-            sender.setPort(465);
-            sender.setJavaMailProperties(properties);
-
-            String[] to = {"caojing@icourt.cc", "dujiang@icourt.cc"};
+            JavaMailSenderImpl sender = getMailSender();
 
             SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setFrom("caojing@icourt.cc");
+            msg.setFrom(from);
             msg.setTo(to);
             msg.setSubject(subject);
             msg.setText(content);
             sender.send(msg);
         });
+    }
+
+    /**
+     * 异步发送html格式邮件（阿里云和华为云不支持smtp 25端口，改用ssl 465端口发送才好使）
+     *
+     * @param subject     邮件主题
+     * @param htmlContent 邮件内容
+     * @author CaoJing
+     * @date 2019/10/15 15:57
+     */
+    public static void sendHtmlMail(String subject, String htmlContent) {
+        THREAD_POOL.submit(() -> {
+            JavaMailSenderImpl sender = getMailSender();
+            MimeMessage msg = sender.createMimeMessage();
+            try {
+                MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+                helper.setFrom(from);
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setText(htmlContent, true);
+                sender.send(msg);
+
+            } catch (MessagingException e) {
+                log.error("mail fail", e);
+            }
+            sender.send(msg);
+        });
+    }
+
+    /**
+     * 获取邮件发送对象
+     */
+    private static JavaMailSenderImpl getMailSender() {
+        Properties properties = new Properties();
+        // 开启认证
+        properties.setProperty("mail.smtp.auth", "true");
+        // 启用调试
+//            properties.setProperty("mail.debug", "true");
+        // 设置链接超时
+        properties.setProperty("mail.smtp.timeout", "25000");
+        // 设置端口
+        properties.setProperty("mail.smtp.port", "465");
+        // 设置ssl端口
+        properties.setProperty("mail.smtp.socketFactory.port", "465");
+        properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+        properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        sender.setHost("smtp.exmail.qq.com");
+        sender.setDefaultEncoding("UTF-8");
+        sender.setUsername("caojing@icourt.cc");
+        sender.setPassword("i113234CJ");
+        sender.setPort(465);
+        sender.setJavaMailProperties(properties);
+        return sender;
     }
 
     /**
@@ -278,5 +325,10 @@ public class GlobalExceptionHandler {
             sb.append("参数").append(i + 1).append(":").append(JSON.toJSONString(arg[i]));
         }
         return sb.toString();
+    }
+
+    @Test
+    public void test20191229175800() {
+        sendHtmlMail("测试邮件", "<p><span style=\"color:#E53333;\">异常日志</span></p><p>正常日志</p><p><br/></p>");
     }
 }
