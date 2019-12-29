@@ -45,12 +45,12 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
     /**
      * 发件人
      */
-    private static final String from = "caojing@icourt.cc";
+    private static final String FROM = "caojing@icourt.cc";
 
     /**
      * 收件人
      */
-    private static final String[] to = {"caojing@icourt.cc", "dujiang@icourt.cc"};
+    private static final String[] TO = {"caojing@icourt.cc", "dujiang@icourt.cc"};
 
     /**
      * 中文字符范围
@@ -58,9 +58,9 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
     private static final Pattern CHINESE_PATTERN = Pattern.compile("[\u4e00-\u9fa5]");
 
     /**
-     * 当前线程请求体
+     * 当前线程请求体（注意：要在拦截器HandlerInterceptorAdapter的afterCompletion方法中释放，不然会造成内存泄漏）
      */
-    private static final ThreadLocal<String> REQUEST_BODY = new ThreadLocal<>();
+    public static final ThreadLocal<String> REQUEST_BODY = new ThreadLocal<>();
 
     /**
      * 未捕获异常会在这处理
@@ -193,8 +193,8 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
             JavaMailSenderImpl sender = getMailSender();
 
             SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setFrom(from);
-            msg.setTo(to);
+            msg.setFrom(FROM);
+            msg.setTo(TO);
             msg.setSubject(subject);
             msg.setText(content);
             sender.send(msg);
@@ -215,8 +215,8 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
             MimeMessage msg = sender.createMimeMessage();
             try {
                 MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-                helper.setFrom(from);
-                helper.setTo(to);
+                helper.setFrom(FROM);
+                helper.setTo(TO);
                 helper.setSubject(subject);
                 helper.setText(htmlContent, true);
                 sender.send(msg);
@@ -286,7 +286,7 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
     public static void errorLogAndMail(String subject, String content) {
         try {
             THREAD_POOL.submit(() -> {
-                sendMail(subject, content);
+                sendErrorMail(subject, content);
                 log.error(subject + ":" + content);
             }).get();
         } catch (Exception ex) {
