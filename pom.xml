@@ -28,6 +28,7 @@
         <module>springboot-timer</module>
         <module>springboot-websocket</module>
         <module>springboot-kafka</module>
+        <module>springboot-hbase</module>
     </modules>
     <packaging>pom</packaging>
 

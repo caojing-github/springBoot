@@ -110,4 +110,10 @@ public class RedisCacheDemo {
         System.out.println(RedisCache.isExists("autoReleaseLock:caojing666"));
     }
 
+    @Test
+    public void test20200105194731() {
+        final Map<String, String> map = RedisCache.getJedis().hgetAll("schedule:2020-01-03 00:00:00");
+        System.out.println(JSON.toJSONString(map, PrettyFormat));
+    }
+
 }

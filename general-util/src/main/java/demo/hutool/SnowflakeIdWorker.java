@@ -4,13 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * SnowFlake 算法 https://mp.weixin.qq.com/s/X2QxvFpdQS6z8CzhfIFW8Q
- *
+ * <p>
  * 使用snowflake算法加入以下依赖
  *
  * <dependency>
- *     <groupId>cn.hutool</groupId>
- *     <artifactId>hutool-captcha</artifactId>
- *     <version>${hutool.version}</version>
+ * <groupId>cn.hutool</groupId>
+ * <artifactId>hutool-captcha</artifactId>
+ * <version>${hutool.version}</version>
  * </dependency>
  * 参考文档 https://hutool.cn/docs/#/
  */

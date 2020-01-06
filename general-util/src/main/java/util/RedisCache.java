@@ -34,12 +34,12 @@ public class RedisCache {
          * test 9 号库
          */
         DEV(
-            "192.168.255.2",
+            "172.16.85.111",
             6379,
-            null,
+            "ENvcxYwhGkWF8XrM",
             200,
             10000,
-            8
+            1
         ),
 
         /**

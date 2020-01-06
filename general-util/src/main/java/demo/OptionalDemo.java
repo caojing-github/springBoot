@@ -29,4 +29,12 @@ public class OptionalDemo {
     public static void printName(String name) {
         Optional.ofNullable(name).ifPresent(u -> log.info(name));
     }
+
+    /**
+     * 获取CPU数量
+     */
+    @Test
+    public void test20200104220205() {
+        System.out.println(Runtime.getRuntime().availableProcessors());
+    }
 }
