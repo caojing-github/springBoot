@@ -1,0 +1,17 @@
+POST http://172.16.71.1:9606/judgement_1015/judgement/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "term": {
+      "prosecution_organ_term": "最高人民检察院"
+    }
+  }
+}
+
+###
+GET http://172.16.71.1:9606/judgement_1015/judgement/0CB010DEC346BD78BF6D771A6EC05D95
+
+###
+
+

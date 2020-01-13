@@ -1,0 +1,7 @@
+{
+  "query": {
+    "term": {
+      "prosecution_organ_term": "最高人民检察院"
+    }
+  }
+}

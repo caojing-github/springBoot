@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 该工具仅用作测试用，待完善项：Connection、Table的关闭
+ * 该工具仅用作测试用，生产环境请不要使用
+ * 待完善项：Connection、Table的关闭
  */
 @Slf4j
 public class HBaseKit {
@@ -60,9 +61,12 @@ public class HBaseKit {
         return resultMap;
     }
 
+    /**
+     * 查询
+     */
     @Test
     public void test20200106214811() throws Exception {
-        final Map<String, Object> map = findOne("judgement_ds", "3939A42B209AE271C7EBBA94CFFE373F");
+        final Map<String, Object> map = findOne("judgement_ds", "4bb5ce03ad03f1730c1de7f8bdc64d06");
         System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
     }
 }
