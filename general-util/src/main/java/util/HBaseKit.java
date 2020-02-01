@@ -14,8 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 该工具仅用作测试用，生产环境请不要使用
- * 待完善项：Connection、Table的关闭
+ * HBase工具
  */
 @Slf4j
 public class HBaseKit {
@@ -42,7 +41,10 @@ public class HBaseKit {
         }
     }
 
-    public static Map<String, Object> findOne(String tableName, String rowKey) throws Exception {
+    /**
+     * 通过rowKey查询
+     */
+    public static Map<String, Object> findOne(String tableName, String rowKey) throws IOException {
         Map<String, Object> resultMap;
         try (Table table = DB.DB_1.connection.getTable(TableName.valueOf(tableName))) {
             if (table == null) {
@@ -54,9 +56,6 @@ public class HBaseKit {
             for (Cell cell : result.rawCells()) {
                 resultMap.put(Bytes.toString(CellUtil.cloneQualifier(cell)), Bytes.toString(CellUtil.cloneValue(cell)));
             }
-        } catch (IOException e) {
-            log.error("", e);
-            throw e;
         }
         return resultMap;
     }
@@ -66,7 +65,7 @@ public class HBaseKit {
      */
     @Test
     public void test20200106214811() throws Exception {
-        final Map<String, Object> map = findOne("judgement_ds", "4bb5ce03ad03f1730c1de7f8bdc64d06");
+        final Map<String, Object> map = findOne("judgement_ds", "C573745C8C19E96467DB5EE3525AAE26");
         System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
     }
 }
