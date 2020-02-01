@@ -112,7 +112,22 @@ public class RedisCacheDemo {
 
     @Test
     public void test20200105194731() {
-        final Map<String, String> map = RedisCache.getJedis().hgetAll("schedule:2020-01-03 00:00:00");
+        final Map<String, String> map = RedisCache.getJedis().hgetAll("schedule:2020-01-31 00:00:00");
+        System.out.println(JSON.toJSONString(map, PrettyFormat));
+    }
+
+    @Test
+    public void test20200201021719() {
+        RedisCache.getJedis()
+            .keys("schedule:*")
+            .stream()
+            .sorted()
+            .forEach(System.out::println);
+    }
+
+    @Test
+    public void test20200130041641() {
+        final Map<String, String> map = RedisCache.getJedis().hgetAll("hbAdd20200130");
         System.out.println(JSON.toJSONString(map, PrettyFormat));
     }
 
