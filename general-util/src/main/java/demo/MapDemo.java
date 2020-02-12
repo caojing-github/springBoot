@@ -1,8 +1,10 @@
 package demo;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,5 +66,17 @@ public class MapDemo {
         myMap.computeIfPresent(keyC, (k, v) -> k + v);
         myMap.computeIfPresent(keyH, (k, v) -> k + v);
         System.out.println(myMap);
+    }
+
+
+    @Test
+    public void test20200207012916() {
+        List<Integer> list = Lists.newArrayList(1, 2, 3, 4);
+        for (Integer i : list) {
+            if (i == 3) {
+                break;
+            }
+            System.out.println(i);
+        }
     }
 }

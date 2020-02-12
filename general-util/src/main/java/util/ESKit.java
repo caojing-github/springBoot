@@ -95,7 +95,7 @@ public final class ESKit {
      */
     @Test
     public void test20200111205524() throws Exception {
-        FileInputStream fis = new FileInputStream(new File("/Users/icourt/IdeaProjects/springBoot/DSL.txt"));
+        FileInputStream fis = new FileInputStream(new File("/Users/caojing/IdeaProjects/springBoot/DSL.txt"));
         JSONObject jsonObject = JSON.parseObject(fis, JSONObject.class);
 
         Request request = new Request("POST", "/judgement_1015/judgement/_search");
@@ -107,7 +107,7 @@ public final class ESKit {
 
         JSONObject parseObject = JSON.parseObject(EntityUtils.toString(response.getEntity()));
 
-        FileOutputStream fos = new FileOutputStream(new File("/Users/icourt/IdeaProjects/springBoot/ES.OUT.txt"));
+        FileOutputStream fos = new FileOutputStream(new File("/Users/caojing/IdeaProjects/springBoot/ES.OUT.txt"));
         // 以人类可读方式打印
         log.info(JSON.toJSONString(parseObject, true));
         // 将结果输出到文件

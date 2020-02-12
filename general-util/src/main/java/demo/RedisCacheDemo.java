@@ -131,4 +131,30 @@ public class RedisCacheDemo {
         System.out.println(JSON.toJSONString(map, PrettyFormat));
     }
 
+    @Test
+    public void test20200207024018() {
+        System.out.println("lower:" + RedisCache.getJedis().get("lower"));
+        System.out.println("upper:" + RedisCache.getJedis().get("upper"));
+        System.out.println("esDelet:" + RedisCache.getJedis().get("esDelet"));
+        System.out.println("hbDelet:" + RedisCache.getJedis().get("hbDelet"));
+        System.out.println("dsidMod:" + RedisCache.getJedis().get("dsidMod"));
+    }
+
+    /**
+     * 重设
+     */
+    @Test
+    public void test20200207024220() {
+        RedisCache.getJedis().set("lower", "0");
+        RedisCache.getJedis().set("upper", "0");
+        RedisCache.getJedis().set("esDelet", "0");
+        RedisCache.getJedis().set("hbDelet", "0");
+        RedisCache.getJedis().set("dsidMod", "0");
+    }
+
+    @Test
+    public void test20200206020821() {
+        log.info("hbase:" + RedisCache.getJedis().get("hbase"));
+        log.info("tidb:" + RedisCache.getJedis().get("tidb"));
+    }
 }

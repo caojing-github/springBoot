@@ -10,6 +10,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public class HBaseKit {
             }
             Get get = new Get(rowKey.getBytes());
             Result result = table.get(get);
-            resultMap = new HashMap<>(10);
+            resultMap = new HashMap<>(16);
             for (Cell cell : result.rawCells()) {
                 resultMap.put(Bytes.toString(CellUtil.cloneQualifier(cell)), Bytes.toString(CellUtil.cloneValue(cell)));
             }
@@ -61,11 +62,33 @@ public class HBaseKit {
     }
 
     /**
+     * 根据rowKey删除指定的行
+     */
+    public static void deleteRow(String tableName, String rowKey) throws IOException {
+        try (Table table = DB.DB_1.connection.getTable(TableName.valueOf(tableName))) {
+            Delete delete = new Delete(Bytes.toBytes(rowKey));
+            table.delete(delete);
+        }
+    }
+
+    /**
      * 查询
      */
     @Test
     public void test20200106214811() throws Exception {
-        final Map<String, Object> map = findOne("judgement_ds", "C573745C8C19E96467DB5EE3525AAE26");
+        final Map<String, Object> map = findOne("judgement_ds", "35C0D1C8A8729AAC804A055C74E25055");
+        System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
+    }
+
+    /**
+     * 删除
+     */
+    @Test
+    public void test20200211143947() throws IOException {
+        // 删除
+        deleteRow("judgement_ds", "2B2A113088A9BCC6F8DF9C258490A3F7");
+        // 查询
+        final Map<String, Object> map = findOne("judgement_ds", "2B2A113088A9BCC6F8DF9C258490A3F7");
         System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
     }
 }
