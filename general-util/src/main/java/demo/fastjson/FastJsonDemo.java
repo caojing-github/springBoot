@@ -1,6 +1,7 @@
 package demo.fastjson;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
 
 import java.io.File;
@@ -22,8 +23,8 @@ public class FastJsonDemo {
      */
     @Test
     public void test20191219170919() throws IOException {
-        FileInputStream fis = new FileInputStream(new File("/Users/icourt/IdeaProjects/springBoot/token.txt"));
-        List<Map> o = JSON.parseObject(fis, List.class);
+        FileInputStream fis = new FileInputStream(new File("/Users/caojing/IdeaProjects/springBoot/token.txt"));
+        List<JSONObject> o = JSON.parseObject(fis, List.class);
         System.out.println();
     }
 }

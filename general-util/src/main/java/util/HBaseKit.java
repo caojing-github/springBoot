@@ -10,7 +10,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,9 +85,9 @@ public class HBaseKit {
     @Test
     public void test20200211143947() throws IOException {
         // 删除
-        deleteRow("judgement_ds", "2B2A113088A9BCC6F8DF9C258490A3F7");
+        deleteRow("judgement_ds", "F82C50B2BD04EB8D026A2E37BB79DF65");
         // 查询
-        final Map<String, Object> map = findOne("judgement_ds", "2B2A113088A9BCC6F8DF9C258490A3F7");
+        final Map<String, Object> map = findOne("judgement_ds", "F82C50B2BD04EB8D026A2E37BB79DF65");
         System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
     }
 }

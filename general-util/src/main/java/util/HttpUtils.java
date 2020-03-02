@@ -49,13 +49,12 @@ public class HttpUtils {
      *
      * @param host
      * @param path
-     * @param method
      * @param headers
      * @param querys
      * @return
      * @throws Exception
      */
-    public static HttpResponse doGet(String host, String path, String method,
+    public static HttpResponse doGet(String host, String path,
                                      Map<String, String> headers,
                                      Map<String, String> querys)
         throws Exception {
@@ -78,7 +77,7 @@ public class HttpUtils {
      * @date 2019/3/16 13:12
      */
     public static HttpResponse doGet(@NotBlank String url) throws Exception {
-        return doGet(url, null, "GET", Maps.newHashMap(), Maps.newHashMap());
+        return doGet(url, null, Maps.newHashMap(), Maps.newHashMap());
     }
 
     /**

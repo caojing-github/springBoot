@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
@@ -27,6 +28,56 @@ import static util.HBaseKit.findOne;
  */
 @Slf4j
 public class VavrDemo {
+
+    @Test
+    public void test20200217050019() {
+        try {
+            int x = 1 / 0;
+        } finally {
+            System.out.println("。。。");
+        }
+    }
+
+    @Test
+    public void test20200219105138() {
+        Try.success(8).map(x -> null).map(y -> {
+            System.out.println(y);
+            return y;
+        });
+    }
+
+    /**
+     * Try.runRunnable
+     */
+    @Test
+    public void test20200219100947() {
+        Try.runRunnable(() -> System.out.println(1 / 0))
+            .onFailure(e -> System.out.println("出错了"));
+    }
+
+    /**
+     * Try.run
+     */
+    @Test
+    public void test20200222162545() {
+        Try.run(() -> System.out.println(1 / 0))
+            .onFailure(e -> System.out.println("出错了"))
+            .andFinally(() -> System.out.println("清理资源"));
+    }
+
+    /**
+     * Try.getOrElseThrow
+     */
+    @Test
+    public void test20200222174814() {
+        Try.run(() -> System.out.println(1 / 0))
+            .getOrElseThrow((Function<Throwable, RuntimeException>) RuntimeException::new);
+    }
+
+    @Test
+    public void test20200219062247() {
+        Try.of(() -> 1 / 0).getOrElseThrow(e -> new RuntimeException("分母为0"));
+    }
 
     /**
      * Try.of

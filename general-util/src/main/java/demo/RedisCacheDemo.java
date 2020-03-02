@@ -1,6 +1,8 @@
 package demo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.ParserConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
@@ -127,7 +129,7 @@ public class RedisCacheDemo {
 
     @Test
     public void test20200130041641() {
-        final Map<String, String> map = RedisCache.getJedis().hgetAll("hbAdd20200130");
+        final Map<String, String> map = RedisCache.getJedis().hgetAll("schedule:2020-02-16 00:00:00 2020-02-17 00:00:00");
         System.out.println(JSON.toJSONString(map, PrettyFormat));
     }
 
@@ -154,7 +156,29 @@ public class RedisCacheDemo {
 
     @Test
     public void test20200206020821() {
-        log.info("hbase:" + RedisCache.getJedis().get("hbase"));
-        log.info("tidb:" + RedisCache.getJedis().get("tidb"));
+        log.info("172.16.69.3 es.scroll:" + RedisCache.getJedis().get("es.scroll"));
+        log.info("172.16.69.2 es:scroll:" + RedisCache.getJedis().get("es:scroll"));
+        log.info("172.16.69.1:es:scroll:" + RedisCache.getJedis().get("172.16.69.1:es:scroll"));
+    }
+
+    /**
+     * https://blog.csdn.net/adsl624153/article/details/79562282
+     */
+    @Test
+    public void test20200222014549() {
+        ParserConfig config = new ParserConfig();
+        config.setAutoTypeSupport(true);
+
+        String tradeInfos = RedisCache.getJedis().hget("\"tradeInfos\"", "\"河北宝生工程科技有限公司\"");
+        JSONObject parse = (JSONObject) JSON.parse(tradeInfos, config);
+
+        // 公司信息
+        System.out.println(JSON.toJSONString(parse, PrettyFormat));
+
+        // 子行业对应行业大类关系
+        System.out.println(JSON.toJSONString(RedisCache.getJedis().hgetAll("\"companyIndustryHash\""), PrettyFormat));
+
+        // 金属制品业对应的大类行业
+        System.out.println(RedisCache.getJedis().hget("\"companyIndustryHash\"", "\"金属制品业\""));
     }
 }

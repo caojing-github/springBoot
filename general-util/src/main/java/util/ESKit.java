@@ -6,15 +6,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.ClearScrollRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.*;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
@@ -25,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,6 +117,28 @@ public final class ESKit {
         log.info(JSON.toJSONString(parseObject, true));
         // 将结果输出到文件
         JSON.writeJSONString(fos, parseObject, PrettyFormat);
+    }
+
+    /**
+     * Bulk
+     */
+    @Test
+    public void test20200227120633() throws IOException {
+        String court = "曹靖法院";
+        String id = Base64.getEncoder().encodeToString(court.getBytes());
+
+        JSONObject jsonObject = new JSONObject()
+            .fluentPut("id", id)
+            .fluentPut("court", court);
+
+        BulkRequest request = new BulkRequest()
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+            .add(new IndexRequest("suggest_dic_v2_court", "court", id)
+                .source(jsonObject.toJSONString(), XContentType.JSON)
+            );
+
+        BulkResponse bulkResponse = ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
+        System.out.println();
     }
 
     /**
