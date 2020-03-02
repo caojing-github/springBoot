@@ -29,6 +29,7 @@
         <module>springboot-websocket</module>
         <module>springboot-kafka</module>
         <module>springboot-hbase</module>
+        <module>springboot-elasticsearch</module>
     </modules>
     <packaging>pom</packaging>
 
