@@ -79,4 +79,10 @@ public class MapDemo {
             System.out.println(i);
         }
     }
+
+    @Test
+    public void test20200320154206() {
+        Map map = new HashMap(8);
+        System.out.println(map.size());
+    }
 }

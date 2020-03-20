@@ -1,5 +1,7 @@
 package demo;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 /**
@@ -69,5 +71,36 @@ public class StringDemo {
     public void test20200307153346() {
         System.out.println(String.format("%.1f", 0.12));
         System.out.println(String.format("%.1f", 0.15));
+    }
+
+    /**
+     * String.join
+     */
+    @Test
+    public void test20200320161534() {
+        String join = String.join(" ", "abc", "def");
+        System.out.println(join);
+    }
+
+    @Test
+    public void test20200320162425() {
+        String s = JSON.toJSONString(Lists.newArrayList("合同诈骗罪"));
+        System.out.println(s);
+    }
+
+    @Test
+    public void test20200320221941() {
+        int i = 1;
+        while (i-- > 0) {
+            System.out.println("666");
+        }
+    }
+
+    @Test
+    public void test20200320223251() {
+        int a = 5;
+        System.out.println(5 << 1);
+        System.out.println(5 << 2);
+        System.out.println(5 << 3);
     }
 }
