@@ -1,5 +1,7 @@
 package util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -23,11 +25,12 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.validation.constraints.NotBlank;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
@@ -43,6 +46,10 @@ public class HttpUtils {
     private static final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
     private static final org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient(connectionManager);
     private static final Log logger = LogFactory.getLog(HttpUtils.class);
+
+    public static JSONObject toJSONObject(HttpResponse response) throws IOException {
+        return JSON.parseObject(EntityUtils.toString(response.getEntity()));
+    }
 
     /**
      * get
@@ -76,8 +83,10 @@ public class HttpUtils {
      * @author CaoJing
      * @date 2019/3/16 13:12
      */
-    public static HttpResponse doGet(@NotBlank String url) throws Exception {
-        return doGet(url, null, Maps.newHashMap(), Maps.newHashMap());
+    public static JSONObject doGet(String url) throws Exception {
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put("token", "34042ad2a30241f599b43d7f753b4d21");
+        return toJSONObject(doGet(url, null, headers, Maps.newHashMap()));
     }
 
     /**

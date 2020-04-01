@@ -106,7 +106,7 @@ public final class ESKit {
         Request request = new Request("POST", "/judgement_1015/judgement/_search");
         request.setJsonEntity(jsonObject.toJSONString());
 
-        RestClient client = ES.DEV.client.getLowLevelClient();
+        RestClient client = ES.PRO.client.getLowLevelClient();
         Response response = client.performRequest(request);
         client.close();
 

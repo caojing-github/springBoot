@@ -85,9 +85,9 @@ public class HBaseKit {
     @Test
     public void test20200211143947() throws IOException {
         // 删除
-        deleteRow("judgement_ds", "F82C50B2BD04EB8D026A2E37BB79DF65");
+        deleteRow("judgement_ds", "DA78EDAC724CE10D35CD9F7303082FF4");
         // 查询
-        final Map<String, Object> map = findOne("judgement_ds", "F82C50B2BD04EB8D026A2E37BB79DF65");
+        final Map<String, Object> map = findOne("judgement_ds", "912BEBCF6B6103243BCE2D3945B13AC3");
         System.out.println(JSON.toJSONString(map, SerializerFeature.PrettyFormat));
     }
 }

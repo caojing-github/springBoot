@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import io.vavr.API;
 import io.vavr.CheckedConsumer;
+import io.vavr.Function3;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -123,5 +124,14 @@ public class VavrDemo {
             .collect(Collectors.toList());
 
         System.out.println(integerList);
+    }
+
+    /**
+     * Function3
+     */
+    @Test
+    public void test20200322192529() {
+        Function3<String, String, String, String> f = (x, y, z) -> x + y + z;
+        System.out.println(f.apply("曹靖", "将来", "财富自由"));
     }
 }
