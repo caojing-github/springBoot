@@ -92,12 +92,12 @@ public class ExcelDemo {
     public void test20200401110117() throws Exception {
         List<Map<String, Object>> rows = new ArrayList<>();
 
-        for (int i = 1; i < 1024 && rows.size() <= 1566; i++) {
+        for (int i = 1; i < 1024 && rows.size() <= 3621; i++) {
 
-            JSONObject jsonObject = doGet("https://yjs.alphalawyer.cn/api/v1/casestat/search?pageSize=100&pageIndex=" + i);
-            JSONArray caseinfoList = jsonObject.getJSONObject("data").getJSONArray("caseinfoList");
-            for (int j = 0; j < caseinfoList.size(); j++) {
-                JSONObject map = caseinfoList.getJSONObject(j);
+            JSONObject jsonObject = doGet("https://yjs.alphalawyer.cn/api/v1/courtstat/search?pageSize=50&pageIndex=" + i);
+            JSONArray courtinfoList = jsonObject.getJSONObject("data").getJSONArray("courtinfoList");
+            for (int j = 0; j < courtinfoList.size(); j++) {
+                JSONObject map = courtinfoList.getJSONObject(j);
                 rows.add(map);
             }
         }
