@@ -90,19 +90,19 @@ public class ExcelDemo {
      */
     @Test
     public void test20200401110117() throws Exception {
+        int size = 0;
         List<Map<String, Object>> rows = new ArrayList<>();
-
-        for (int i = 1; i < 1024 && rows.size() <= 3621; i++) {
-
-            JSONObject jsonObject = doGet("https://yjs.alphalawyer.cn/api/v1/courtstat/search?pageSize=50&pageIndex=" + i);
+        for (int i = 1; i < 1024 && size < 3621; i++) {
+            JSONObject jsonObject = doGet("https://yjs.alphalawyer.cn/api/v1/courtstat/search?pageSize=100&pageIndex=" + i);
             JSONArray courtinfoList = jsonObject.getJSONObject("data").getJSONArray("courtinfoList");
             for (int j = 0; j < courtinfoList.size(); j++) {
                 JSONObject map = courtinfoList.getJSONObject(j);
                 rows.add(map);
             }
+            size = rows.size();
         }
         //通过工具类创建writer
-        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/法院数据.xlsx");
+        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/最新版法院数据.xlsx");
         //一次性写出内容，强制输出标题
         writer.write(rows, true);
         //关闭writer，释放内存
