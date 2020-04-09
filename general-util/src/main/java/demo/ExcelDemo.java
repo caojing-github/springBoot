@@ -2,13 +2,20 @@ package demo;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.client.RequestOptions;
 import org.junit.Test;
 import util.ESKit;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -143,5 +150,38 @@ public class ExcelDemo {
         writer.write(rows, true);
         //关闭writer，释放内存
         writer.close();
+    }
+
+    /**
+     * 法官Suggest数据
+     */
+    @Test
+    public void test20200409160215() {
+        List<Map<String, Object>> rows = new ArrayList<>();
+        Consumer<List<JSONObject>> consumer = rows::addAll;
+        ESKit.scroll("suggest-dic_v11_judge_court", "judgeCourt", "{\"match_all\":{}}", null, consumer);
+
+        //通过工具类创建writer
+        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/法官Suggest数据.xlsx");
+        //一次性写出内容，强制输出标题
+        writer.write(rows, true);
+        //关闭writer，释放内存
+        writer.close();
+    }
+
+    /**
+     * 法官Suggest数据批量删除
+     */
+    @Test
+    public void test20200409170135() throws IOException {
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/需要删除的法官suggest.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+
+        BulkRequest request = new BulkRequest()
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
+
+        readAll.forEach(x -> request.add(new DeleteRequest("suggest-dic_v11_judge_court", "judgeCourt", (String) x.get("id"))));
+
+        BulkResponse bulkResponse = ESKit.ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
     }
 }

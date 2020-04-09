@@ -10,6 +10,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -72,7 +73,7 @@ public final class ESKit {
          * https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.3/java-rest-low-usage-initialization.html
          * https://www.elastic.co/guide/en/elasticsearch/client/java-rest/6.3/java-rest-high-getting-started-initialization.html
          */
-        private RestHighLevelClient client;
+        public RestHighLevelClient client;
 
         /**
          * example: 172.16.71.1:9606,172.16.71.1:9607,172.16.71.1:9608,172.16.71.2:9606,172.16.71.2:9607,172.16.71.2:9608
@@ -126,7 +127,7 @@ public final class ESKit {
     }
 
     /**
-     * Bulk
+     * Bulk 添加
      */
     @Test
     public void test20200227120633() throws IOException {
@@ -142,6 +143,19 @@ public final class ESKit {
             .add(new IndexRequest("suggest_dic_v2_court", "court", id)
                 .source(jsonObject.toJSONString(), XContentType.JSON)
             );
+
+        BulkResponse bulkResponse = ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
+        System.out.println();
+    }
+
+    /**
+     * Bulk 删除
+     */
+    @Test
+    public void test20200409171245() throws IOException {
+        BulkRequest request = new BulkRequest()
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+            .add(new DeleteRequest("suggest-dic_v11_judge_court", "judgeCourt", "BStJWLP1z6Q7OSJYcF+eKA=="));
 
         BulkResponse bulkResponse = ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
         System.out.println();
