@@ -7,11 +7,13 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
+import util.ESKit;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static util.HttpUtils.doGet;
 
@@ -103,6 +105,40 @@ public class ExcelDemo {
         }
         //通过工具类创建writer
         ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/最新版法院数据.xlsx");
+        //一次性写出内容，强制输出标题
+        writer.write(rows, true);
+        //关闭writer，释放内存
+        writer.close();
+    }
+
+    /**
+     * 法院Suggest数据
+     */
+    @Test
+    public void test20200409151019() {
+        List<Map<String, Object>> rows = new ArrayList<>();
+        Consumer<List<JSONObject>> consumer = rows::addAll;
+        ESKit.scroll("suggest_dic_v3_court", "court", "{\"match_all\":{}}", null, consumer);
+
+        //通过工具类创建writer
+        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/法院Suggest数据.xlsx");
+        //一次性写出内容，强制输出标题
+        writer.write(rows, true);
+        //关闭writer，释放内存
+        writer.close();
+    }
+
+    /**
+     * 律师事务所Suggest数据
+     */
+    @Test
+    public void test20200409152916() {
+        List<Map<String, Object>> rows = new ArrayList<>();
+        Consumer<List<JSONObject>> consumer = rows::addAll;
+        ESKit.scroll("suggest-dic_v11_lawfirm", "lawfirm", "{\"match_all\":{}}", null, consumer);
+
+        //通过工具类创建writer
+        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/律师事务所Suggest数据.xlsx");
         //一次性写出内容，强制输出标题
         writer.write(rows, true);
         //关闭writer，释放内存

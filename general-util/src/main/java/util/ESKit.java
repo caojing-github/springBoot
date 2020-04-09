@@ -2,7 +2,10 @@ package util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.pivovarit.function.ThrowingRunnable;
+import com.pivovarit.function.ThrowingSupplier;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -19,6 +22,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.*;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
@@ -31,10 +35,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat;
 import static org.elasticsearch.index.query.QueryBuilders.matchPhraseQuery;
+import static org.elasticsearch.index.query.QueryBuilders.wrapperQuery;
 
 /**
  * Elasticsearch 工具
@@ -142,6 +148,53 @@ public final class ESKit {
     }
 
     /**
+     * ES scroll
+     *
+     * @param dsl      DSL语句
+     * @param includes ES scroll结果包含字段
+     * @param consumer 消费函数
+     */
+    public static void scroll(String index, String indexType, String dsl, String[] includes, Consumer<List<JSONObject>> consumer) {
+        final Scroll scroll = new Scroll(TimeValue.timeValueMinutes(5));
+        SearchRequest q = new SearchRequest()
+            .indices(index)
+            .types(indexType)
+            .scroll(scroll);
+
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
+            .query(wrapperQuery(dsl))
+            .size(1000);
+
+        if (ArrayUtils.isNotEmpty(includes)) {
+            sourceBuilder.fetchSource(includes, null);
+        }
+        q.source(sourceBuilder);
+
+        SearchResponse r = ThrowingSupplier.sneaky(() -> ES.PRO.client.search(q, RequestOptions.DEFAULT)).get();
+        String scrollId = r.getScrollId();
+        SearchHit[] searchHits = r.getHits().getHits();
+
+        while (searchHits != null && searchHits.length > 0) {
+            List<JSONObject> list = Arrays.stream(searchHits)
+                .map(SearchHit::getSourceAsString)
+                .map(JSON::parseObject)
+                .collect(Collectors.toList());
+
+            consumer.accept(list);
+
+            SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId)
+                .scroll(scroll);
+
+            r = ThrowingSupplier.sneaky(() -> ES.PRO.client.scroll(scrollRequest, RequestOptions.DEFAULT)).get();
+            scrollId = r.getScrollId();
+            searchHits = r.getHits().getHits();
+        }
+        ClearScrollRequest c = new ClearScrollRequest();
+        c.addScrollId(scrollId);
+        ThrowingRunnable.sneaky(() -> ES.PRO.client.clearScroll(c, RequestOptions.DEFAULT)).run();
+    }
+
+    /**
      * fix:公诉机关:最高人民检察院
      */
     @Test
@@ -197,5 +250,16 @@ public final class ESKit {
         client.close();
 
         System.out.println("执行成功");
+    }
+
+    /**
+     * es scroll
+     */
+    @Test
+    public void test20200409151019() {
+        Consumer<List<JSONObject>> consumer = x -> x.forEach(y -> {
+            System.out.println();
+        });
+        scroll("suggest_dic_v3_court", "court", "{\"match_all\":{}}", null, consumer);
     }
 }
