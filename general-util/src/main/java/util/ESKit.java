@@ -1,6 +1,7 @@
 package util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.pivovarit.function.ThrowingRunnable;
 import com.pivovarit.function.ThrowingSupplier;
@@ -28,14 +29,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -145,6 +140,25 @@ public final class ESKit {
             );
 
         BulkResponse bulkResponse = ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
+        System.out.println();
+    }
+
+    /**
+     * Bulk 更新
+     */
+    @Test
+    public void test20200421151028() throws IOException {
+        Map<String, String> map = new HashMap<>(4);
+        map.put("city", "北京市");
+
+        UpdateRequest updateRequest = new UpdateRequest("judgementsearch_dev", "judgement", "91B83307E39952A7975AE65BEC09A5AE");
+        updateRequest.doc(map);
+
+        BulkRequest request = new BulkRequest()
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+            .add(updateRequest);
+
+        BulkResponse bulkResponse = ES.DEV.client.bulk(request, RequestOptions.DEFAULT);
         System.out.println();
     }
 
@@ -275,5 +289,53 @@ public final class ESKit {
             System.out.println();
         });
         scroll("suggest_dic_v3_court", "court", "{\"match_all\":{}}", null, consumer);
+    }
+
+    /**
+     * es查询导出文件
+     */
+    @Test
+    public void test20200417164050() throws IOException {
+        BufferedWriter writer = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/目标文件.txt"));
+
+        String dsl = "{\"from\":0,\"size\":29,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"intermediate_court\":{\"value\":\"广东省中山市中级人民法院\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"level1_case\":{\"value\":\"刑事\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"filter\":[{\"range\":{\"all_judgementinfo_date\":{\"from\":\"2019-01-01\",\"to\":\"2019-12-31\",\"include_lower\":true,\"include_upper\":true,\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}}],\"should\":[{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}},{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}},{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}}],\"must_not\":{\"exists\":{\"field\":\"level2_case\"}},\"adjust_pure_negative\":true,\"minimum_should_match\":\"0\",\"boost\":1}},\"_source\":{\"includes\":[\"jid\"],\"excludes\":[]}}";
+        Request request = new Request("POST", "/judgement_1015/judgement/_search");
+        request.setJsonEntity(dsl);
+
+        RestClient client = ES.PRO.client.getLowLevelClient();
+        Response response = client.performRequest(request);
+        client.close();
+
+        JSONArray jsonArray = JSON.parseObject(EntityUtils.toString(response.getEntity()))
+            .getJSONObject("hits")
+            .getJSONArray("hits");
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            String jid = jsonArray.getJSONObject(i).getJSONObject("_source").getString("jid");
+            String url = "https://alphalawyer.cn/#/app/tool/result/%7B%5B%5D,%7D/detail/" + jid;
+            writer.write(url + "\r\n");
+        }
+        writer.flush();
+        writer.close();
+    }
+
+    /**
+     * es scroll查询导出文件
+     */
+    @Test
+    public void test20200417172320() throws IOException {
+        BufferedWriter writer = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/目标文件.txt"));
+
+        Consumer<List<JSONObject>> consumer = x -> x.forEach(y -> {
+            String jid = y.getString("jid");
+            String url = "https://alphalawyer.cn/#/app/tool/result/%7B%5B%5D,%7D/detail/" + jid;
+            ThrowingRunnable.sneaky(() -> writer.write(url + "\r\n")).run();
+        });
+
+        String dsl = "{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"intermediate_court\":{\"value\":\"广东省中山市中级人民法院\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"level1_case\":{\"value\":\"刑事\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"filter\":[{\"range\":{\"all_judgementinfo_date\":{\"from\":\"2019-01-01\",\"to\":\"2019-12-31\",\"include_lower\":true,\"include_upper\":true,\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}}],\"should\":[{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}},{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}},{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}}],\"must_not\":{\"exists\":{\"field\":\"level2_case\"}},\"adjust_pure_negative\":true,\"minimum_should_match\":\"0\",\"boost\":1}}";
+        ESKit.scroll("judgement_1015", "judgement", dsl, new String[]{"jid"}, consumer);
+
+        writer.flush();
+        writer.close();
     }
 }

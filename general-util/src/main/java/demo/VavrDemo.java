@@ -67,6 +67,14 @@ public class VavrDemo {
     }
 
     /**
+     * getOrElseTry
+     */
+    @Test
+    public void test20200413134835() {
+        System.out.println(Try.success(1).mapTry(x -> x / 0).getOrElseTry(() -> 2));
+    }
+
+    /**
      * Try.getOrElseThrow
      */
     @Test

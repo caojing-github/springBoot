@@ -26,6 +26,7 @@ import static util.HttpUtils.doGet;
 
 /**
  * Excel
+ * https://hutool.cn/docs/#/poi/Excel%E5%B7%A5%E5%85%B7-ExcelUtil
  *
  * @author CaoJing
  * @date 2020/03/30 01:15
@@ -174,6 +175,7 @@ public class ExcelDemo {
      */
     @Test
     public void test20200409170135() throws IOException {
+        // Excel读取-ExcelReader https://hutool.cn/docs/#/poi/Excel%E8%AF%BB%E5%8F%96-ExcelReader
         ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/需要删除的法官suggest.xlsx");
         List<Map<String, Object>> readAll = reader.readAll();
 

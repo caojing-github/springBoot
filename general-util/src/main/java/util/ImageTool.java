@@ -22,7 +22,7 @@ public class ImageTool {
      * @date 2019/10/17 10:34
      */
     public static String getBase64ImageString(String filePath) throws IOException {
-        return Base64.encodeBase64String(FileUtil.toByteArray(filePath));
+        return Base64.encodeBase64String(FileKit.toByteArray(filePath));
     }
 
     /**
@@ -30,7 +30,7 @@ public class ImageTool {
      */
     @Test
     public void test20191107193928() throws IOException {
-        String s = Base64.encodeBase64String(FileUtil.toByteArray("/Users/icourt/Desktop/背景.jpeg"));
+        String s = Base64.encodeBase64String(FileKit.toByteArray("/Users/icourt/Desktop/背景.jpeg"));
         log.info(Base64.isBase64(s) + "");
         // 注意：下面的字符串不是Base64字符串
         log.info(Base64.isBase64("data:image/jpeg;base64," + s) + "");
