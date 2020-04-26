@@ -7,6 +7,7 @@ import com.pivovarit.function.ThrowingRunnable;
 import com.pivovarit.function.ThrowingSupplier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -31,6 +32,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -119,6 +121,20 @@ public final class ESKit {
         log.info(JSON.toJSONString(parseObject, true));
         // 将结果输出到文件
         JSON.writeJSONString(fos, parseObject, PrettyFormat);
+    }
+
+    /**
+     * 插入
+     */
+    @Test
+    public void test20200422152312() throws IOException {
+        String json = "{\"accept_date\":\"2020-03-04\",\"acceptance_fee\":0.0,\"acceptance_fee_level\":-1,\"allChiefJudgeTerm\":\"董玉敏\",\"all_caseinfo_court_term\":\"锦州市凌河区人民法院\",\"all_caseinfo_leveloftria\":-1,\"all_chief_judge\":\"董玉敏\",\"all_clerk\":\"黄彦元\",\"all_judge\":\"董玉敏\",\"all_judge_courts\":[\"董玉敏 锦州市凌河区人民法院\"],\"all_judge_courts_analyzed\":[\"董玉敏 锦州市凌河区人民法院\"],\"all_judge_term\":\"董玉敏\",\"all_judges\":[\"董玉敏\"],\"all_judges_json\":\"[{\\\"names\\\":[\\\"董玉敏\\\"],\\\"needLink\\\":true,\\\"tag\\\":\\\"审判员\\\"},{\\\"names\\\":[\\\"黄彦元\\\"],\\\"needLink\\\":false,\\\"tag\\\":\\\"书记员\\\"}]\",\"all_litigant\":[\"孙世华\",\"河津市腾发工程机械有限公司\"],\"all_litigant_analyzed\":[\"孙世华\",\"河津市腾发工程机械有限公司\"],\"all_litigant_json\":\"[{\\\"extra\\\":{},\\\"handleType\\\":\\\"REG\\\",\\\"name\\\":\\\"河津市腾发工程机械有限公司\\\",\\\"original\\\":\\\"申请人：河津市腾发工程机械有限公司，住所地山西省河津市。\\\",\\\"tags\\\":[\\\"PROPOSER\\\",\\\"COMPANY\\\"]},{\\\"extra\\\":{},\\\"handleType\\\":\\\"REG\\\",\\\"name\\\":\\\"孙世华\\\",\\\"original\\\":\\\"法定代表人：孙世华，该公司经理。\\\",\\\"tags\\\":[\\\"REPRESENTATIVE\\\"]},{\\\"extra\\\":{},\\\"handleType\\\":\\\"REG\\\",\\\"name\\\":\\\"郭蓬恩\\\",\\\"original\\\":\\\"委托诉讼代理人：郭蓬恩，该公司职员。\\\",\\\"tags\\\":[\\\"AGENT\\\"]}]\",\"all_original_text\":[],\"all_text_cause\":\"申请公示催告\",\"all_text_cause_term\":\"申请公示催告\",\"applicant\":[\"河津市腾发工程机械有限公司\"],\"bizScore\":-345,\"caseLevelJson\":\"[{\\\"causeText\\\":\\\"申请公示催告\\\",\\\"level1\\\":\\\"民事\\\",\\\"level2\\\":\\\"适用特殊程序案件案由\\\",\\\"level3\\\":\\\"公示催告程序案件\\\",\\\"level4\\\":\\\"申请公示催告\\\"}]\",\"caseLevels\":[{\"causeText\":\"申请公示催告\",\"level1\":\"民事\",\"level2\":\"适用特殊程序案件案由\",\"level3\":\"公示催告程序案件\",\"level4\":\"申请公示催告\"}],\"case_rel_bean_list\":[],\"causeList\":\"[\\\"申请公示催告\\\"]\",\"city\":\"锦州市\",\"claim_value\":-1,\"courtName\":\"锦州市凌河区人民法院\",\"court_level\":\"基层人民法院\",\"defendant_litigant\":[],\"defendant_litigant_lawfirm\":[],\"defendant_litigant_lawyer\":[],\"defendant_litigant_name\":[],\"documentNumber\":\"（2020）辽0703民催1号\",\"dsid\":\"B752C3197B84A6FDEBB5E6C765931E12\",\"extStr\":\"{\\\"judgeLevel\\\":\\\"\\\",\\\"caseNum\\\":\\\"（2020）辽0703民催1号\\\",\\\"judgeDate\\\":1584892800000,\\\"courtName\\\":\\\"辽宁省锦州市凌河区人民法院\\\",\\\"thirdId\\\":\\\"47c947436f744a8b8d54ab880026690d\\\",\\\"caseName\\\":\\\"河津市腾发工程机械有限公司申请公示催告民事裁定书\\\",\\\"caseType\\\":\\\"催告\\\"}\",\"flag\":0,\"higher_court\":\"辽宁省高级人民法院\",\"instrumentLinks\":[],\"intermediate_court\":\"辽宁省锦州市中级人民法院\",\"isUnPublishedCase\":false,\"is_tax_case\":false,\"jid\":\"B752C3197B84A6FDEBB5E6C765931E12\",\"judgeDate\":1584892800000,\"judgeLevel\":\"\",\"lawLinkInfo\":[{\"articleSequence\":\"第一百五十四条第一款第十一项\",\"end\":0,\"lawName\":\"中华人民共和国民事诉讼法（2017修正）\",\"lawReguDetailFullName\":\"中华人民共和国民事诉讼法（2017修正）第一百五十四条第一款第十一项\",\"lawReguType\":1,\"lid\":\"1c8b5d91f4929b9b464d99a20daaf5e8\",\"start\":0,\"type\":0},{\"articleSequence\":\"第四百五十五条\",\"end\":0,\"lawName\":\"最高人民法院关于适用《中华人民共和国民事诉讼法》的解释\",\"lawReguDetailFullName\":\"最高人民法院关于适用《中华人民共和国民事诉讼法》的解释第四百五十五条\",\"lawReguType\":1,\"lid\":\"acf897fe3e9a193323e9d380eecf3c6c\",\"start\":0,\"type\":0}],\"level1_case\":\"民事\",\"level2_case\":\"适用特殊程序案件案由\",\"level3_case\":\"公示催告程序案件\",\"level4_case\":\"申请公示催告\",\"level_case_all_analyzed\":\"民事 适用特殊程序案件案由 公示催告程序案件 申请公示催告\",\"litigantFlag\":0,\"litigant_company\":[\"河津市腾发工程机械有限公司\"],\"modifier\":\"yujianing\",\"modifyType\":\"ds_update\",\"orderList\":\"[\\\"all_text_litigantinfo\\\",\\\"firstinstance_text_basicinfo\\\",\\\"firstinstance_text_opinion\\\",\\\"firstinstance_text_judgement\\\",\\\"all_text_judge\\\"]\",\"other_litigant\":[\"孙世华\",\"郭蓬恩\"],\"paragraphs\":[{\"labelType\":1,\"lableName\":\"当事人信息\",\"length\":64,\"subParagraphs\":[{\"index\":1,\"length\":28,\"segId\":1,\"sentences\":[{\"index\":1,\"length\":28,\"paragraphId\":1,\"segId\":1,\"text\":\"申请人：河津市腾发工程机械有限公司，住所地山西省河津市。\"}],\"text\":\"申请人：河津市腾发工程机械有限公司，住所地山西省河津市。\"},{\"index\":2,\"length\":16,\"segId\":1,\"sentences\":[{\"index\":1,\"length\":16,\"paragraphId\":2,\"segId\":1,\"text\":\"法定代表人：孙世华，该公司经理。\"}],\"text\":\"法定代表人：孙世华，该公司经理。\"},{\"index\":3,\"length\":18,\"segId\":1,\"sentences\":[{\"index\":1,\"length\":18,\"paragraphId\":3,\"segId\":1,\"text\":\"委托诉讼代理人：郭蓬恩，该公司职员。\"}],\"text\":\"委托诉讼代理人：郭蓬恩，该公司职员。\"}],\"text\":\"申请人：河津市腾发工程机械有限公司，住所地山西省河津市。\\n法定代表人：孙世华，该公司经理。\\n委托诉讼代理人：郭蓬恩，该公司职员。\"},{\"labelType\":2,\"lableName\":\"案件概述\",\"length\":77,\"subParagraphs\":[{\"index\":1,\"length\":77,\"segId\":2,\"sentences\":[{\"index\":1,\"length\":40,\"paragraphId\":1,\"segId\":2,\"text\":\"申请人河津市腾发工程机械有限公司申请公示催告一案，本院于2020年3月4日立案。\"},{\"index\":2,\"length\":37,\"paragraphId\":1,\"segId\":2,\"text\":\"申请人河津市腾发工程机械有限公司于2020年3月17日向本院提出撤回申请。\"}],\"text\":\"申请人河津市腾发工程机械有限公司申请公示催告一案，本院于2020年3月4日立案。申请人河津市腾发工程机械有限公司于2020年3月17日向本院提出撤回申请。\"}],\"text\":\"申请人河津市腾发工程机械有限公司申请公示催告一案，本院于2020年3月4日立案。申请人河津市腾发工程机械有限公司于2020年3月17日向本院提出撤回申请。\"},{\"labelType\":7,\"lableName\":\"一审法院认为\",\"length\":50,\"subParagraphs\":[{\"index\":1,\"length\":50,\"segId\":7,\"sentences\":[{\"index\":1,\"length\":50,\"paragraphId\":1,\"segId\":7,\"text\":\"本院认为，申请人河津市腾发工程机械有限公司在公示催告前向本院提出撤回申请，不违反法律规定，应予准许。\"}],\"text\":\"本院认为，申请人河津市腾发工程机械有限公司在公示催告前向本院提出撤回申请，不违反法律规定，应予准许。\"}],\"text\":\"本院认为，申请人河津市腾发工程机械有限公司在公示催告前向本院提出撤回申请，不违反法律规定，应予准许。\"},{\"labelType\":8,\"lableName\":\"一审裁判结果\",\"length\":345,\"subParagraphs\":[{\"index\":1,\"length\":295,\"segId\":8,\"sentences\":[{\"index\":1,\"length\":295,\"paragraphId\":1,\"segId\":8,\"text\":\"依照<a class=\\\"lawregu_link\\\" lawregu-detail lawreguid=\\\"1c8b5d91f4929b9b464d99a20daaf5e8\\\" lawregutiao=\\\"第一百五十四条\\\">《中华人民共和国民事诉讼法》第一百五十四条第一款第十一项</a>、<a class=\\\"lawregu_link\\\" lawregu-detail lawreguid=\\\"acf897fe3e9a193323e9d380eecf3c6c\\\" lawregutiao=\\\"第四百五十五条\\\">《最高人民法院关于适用<中华人民共和国民事诉讼法>的解释》第四百五十五条</a>规定，裁定如下：\"}],\"text\":\"依照<a class=\\\"lawregu_link\\\" lawregu-detail lawreguid=\\\"1c8b5d91f4929b9b464d99a20daaf5e8\\\" lawregutiao=\\\"第一百五十四条\\\">《中华人民共和国民事诉讼法》第一百五十四条第一款第十一项</a>、<a class=\\\"lawregu_link\\\" lawregu-detail lawreguid=\\\"acf897fe3e9a193323e9d380eecf3c6c\\\" lawregutiao=\\\"第四百五十五条\\\">《最高人民法院关于适用<中华人民共和国民事诉讼法>的解释》第四百五十五条</a>规定，裁定如下：\"},{\"index\":2,\"length\":20,\"segId\":8,\"sentences\":[{\"index\":1,\"length\":20,\"paragraphId\":2,\"segId\":8,\"text\":\"准许河津市腾发工程机械有限公司撤回申请。\"}],\"text\":\"准许河津市腾发工程机械有限公司撤回申请。\"},{\"index\":3,\"length\":28,\"segId\":8,\"sentences\":[{\"index\":1,\"length\":28,\"paragraphId\":3,\"segId\":8,\"text\":\"申请费100元，由申请人河津市腾发工程机械有限公司负担。\"}],\"text\":\"申请费100元，由申请人河津市腾发工程机械有限公司负担。\"}],\"text\":\"依照<a class=\\\"lawregu_link\\\" lawregu-detail lawreguid=\\\"1c8b5d91f4929b9b464d99a20daaf5e8\\\" lawregutiao=\\\"第一百五十四条\\\">《中华人民共和国民事诉讼法》第一百五十四条第一款第十一项</a>、<a class=\\\"lawregu_link\\\" lawregu-detail lawreguid=\\\"acf897fe3e9a193323e9d380eecf3c6c\\\" lawregutiao=\\\"第四百五十五条\\\">《最高人民法院关于适用<中华人民共和国民事诉讼法>的解释》第四百五十五条</a>规定，裁定如下：\\n准许河津市腾发工程机械有限公司撤回申请。\\n申请费100元，由申请人河津市腾发工程机械有限公司负担。\"},{\"labelType\":9,\"lableName\":\"审判人员\",\"length\":25,\"subParagraphs\":[{\"index\":1,\"length\":6,\"segId\":9,\"sentences\":[{\"index\":1,\"length\":6,\"paragraphId\":1,\"segId\":9,\"text\":\"审判员董玉敏\"}],\"text\":\"审判员董玉敏\"},{\"index\":2,\"length\":11,\"segId\":9,\"sentences\":[{\"index\":1,\"length\":11,\"paragraphId\":2,\"segId\":9,\"text\":\"二〇二〇年三月二十三日\"}],\"text\":\"二〇二〇年三月二十三日\"},{\"index\":3,\"length\":6,\"segId\":9,\"sentences\":[{\"index\":1,\"length\":6,\"paragraphId\":3,\"segId\":9,\"text\":\"书记员黄彦元\"}],\"text\":\"书记员黄彦元\"}],\"text\":\"审判员董玉敏\\n二〇二〇年三月二十三日\\n书记员黄彦元\"}],\"prosecutor_litigant\":[{\"lawyerInfo\":[],\"name\":\"河津市腾发工程机械有限公司\"}],\"prosecutor_litigant_lawfirm\":[],\"prosecutor_litigant_lawyer\":[],\"prosecutor_litigant_name\":[\"河津市腾发工程机械有限公司\"],\"province\":\"辽宁省\",\"publish_type\":0,\"raw_public_prosecution\":\"\",\"region\":\"凌河区\",\"super_court\":\"最高人民法院\",\"thirdId\":\"47c947436f744a8b8d54ab880026690d\",\"thirdParty_litigant\":[],\"timeLimitOfTrial\":19,\"timeLimitOfTrialType\":1,\"title\":\"河津市腾发工程机械有限公司申请公示催告民事裁定书\",\"tradeDefendantCity\":[],\"tradeDefendantLevel1\":[],\"tradeDefendantLevel2\":[],\"tradeDefendantProvince\":[],\"tradeEnterprises\":[{\"enterpriseName\":\"河津市腾发工程机械有限公司\",\"litigationStatus\":0,\"tradeCustomizedLevel2\":\"0\",\"tradeIsLawyer\":\"0\"}],\"tradeOtherCity\":[],\"tradeOtherLevel1\":[],\"tradeOtherLevel2\":[],\"tradeOtherPersons\":[\"孙世华\"],\"tradeOtherProvince\":[],\"tradeProsecutorCity\":[null],\"tradeProsecutorCompanys\":[\"河津市腾发工程机械有限公司\"],\"tradeProsecutorLevel1\":[null],\"tradeProsecutorLevel2\":[null],\"tradeProsecutorProvince\":[null],\"trade_acceptance_fee_level\":-1,\"trialCaseType\":\"催告\",\"type\":2}";
+
+        IndexRequest indexRequest = new IndexRequest("judgementsearch_dev", "judgement", "B752C3197B84A6FDEBB5E6C765931E12")
+            .source(json, XContentType.JSON)
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
+
+        ES.DEV.client.index(indexRequest, RequestOptions.DEFAULT);
     }
 
     /**
@@ -292,13 +308,45 @@ public final class ESKit {
     }
 
     /**
+     * es scroll 案号大于等于35字
+     */
+    @Test
+    public void test20200424112952() throws IOException {
+        BufferedWriter writer1 = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/案号大于等于20字jid.txt"));
+        BufferedWriter writer2 = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/案号大于等于20字.txt"));
+        AtomicInteger i = new AtomicInteger();
+
+        Consumer<List<JSONObject>> consumer = x -> x.forEach(y -> {
+            System.out.println(i.incrementAndGet());
+
+            String casenumber = y.getString("all_caseinfo_casenumber");
+            if (StringUtils.isNotBlank(casenumber) && casenumber.length() >= 35) {
+                String jid = y.getString("jid");
+                String url = "https://alphalawyer.cn/#/app/tool/result/%7B%5B%5D,%7D/detail/" + jid;
+
+                ThrowingRunnable.sneaky(() -> {
+                    writer1.write(jid + "\r\n");
+                    writer2.write(url + "\r\n");
+                }).run();
+            }
+        });
+        scroll("judgement_1015", "judgement", "{\"match_all\":{}}", new String[]{"jid", "all_caseinfo_casenumber"}, consumer);
+
+        writer1.flush();
+        writer1.close();
+
+        writer2.flush();
+        writer2.close();
+    }
+
+    /**
      * es查询导出文件
      */
     @Test
     public void test20200417164050() throws IOException {
-        BufferedWriter writer = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/目标文件.txt"));
+        BufferedWriter writer = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/标题为空案例.txt"));
 
-        String dsl = "{\"from\":0,\"size\":29,\"query\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"intermediate_court\":{\"value\":\"广东省中山市中级人民法院\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"level1_case\":{\"value\":\"刑事\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"should\":[{\"bool\":{\"should\":[{\"bool\":{\"filter\":[{\"range\":{\"all_judgementinfo_date\":{\"from\":\"2019-01-01\",\"to\":\"2019-12-31\",\"include_lower\":true,\"include_upper\":true,\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}},{\"bool\":{\"adjust_pure_negative\":true,\"boost\":1}}],\"should\":[{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}},{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}},{\"term\":{\"publish_type\":{\"value\":\"1\",\"boost\":1000}}},{\"term\":{\"publish_type\":{\"value\":\"2\",\"boost\":1500}}}],\"must_not\":{\"exists\":{\"field\":\"level2_case\"}},\"adjust_pure_negative\":true,\"minimum_should_match\":\"0\",\"boost\":1}},\"_source\":{\"includes\":[\"jid\"],\"excludes\":[]}}";
+        String dsl = "{\"_source\":[\"jid\"],\"size\":1154,\"query\":{\"bool\":{\"must_not\":{\"exists\":{\"field\":\"all_caseinfo_casename\"}}}}}";
         Request request = new Request("POST", "/judgement_1015/judgement/_search");
         request.setJsonEntity(dsl);
 
@@ -314,6 +362,7 @@ public final class ESKit {
             String jid = jsonArray.getJSONObject(i).getJSONObject("_source").getString("jid");
             String url = "https://alphalawyer.cn/#/app/tool/result/%7B%5B%5D,%7D/detail/" + jid;
             writer.write(url + "\r\n");
+//            writer.write(jid + "\r\n");
         }
         writer.flush();
         writer.close();
