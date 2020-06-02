@@ -2,6 +2,7 @@ package demo;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
@@ -21,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static util.HttpUtils.doGet;
 
@@ -176,7 +178,7 @@ public class ExcelDemo {
     @Test
     public void test20200409170135() throws IOException {
         // Excel读取-ExcelReader https://hutool.cn/docs/#/poi/Excel%E8%AF%BB%E5%8F%96-ExcelReader
-        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/需要删除的法官suggest.xlsx");
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/需要删除的法院suggest.xlsx");
         List<Map<String, Object>> readAll = reader.readAll();
 
         BulkRequest request = new BulkRequest()
@@ -185,5 +187,40 @@ public class ExcelDemo {
         readAll.forEach(x -> request.add(new DeleteRequest("suggest-dic_v11_judge_court", "judgeCourt", (String) x.get("id"))));
 
         BulkResponse bulkResponse = ESKit.ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
+    }
+
+    /**
+     * 需要跑法规关联的法规lid
+     */
+    @Test
+    public void test20200506143252() throws IOException {
+        System.out.println("https://alphalawyer.cn/#/app/tool/lawsResult/%7B%5B%5D,%7D/detail/%7B".length());
+        System.out.println("2f11b97a5136e961d97930912fa63656".length());
+
+        // Excel读取-ExcelReader https://hutool.cn/docs/#/poi/Excel%E8%AF%BB%E5%8F%96-ExcelReader
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/常用法律.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+
+        FileWriter writer = new FileWriter("/Users/caojing/Desktop/需要跑的法规关联.txt");
+
+        List<String> lines = readAll.stream()
+            .map(x -> x.get("2").toString().substring(69, 101))
+            .collect(Collectors.toList());
+
+        // 第1种写法
+        writer.writeLines(lines);
+
+        // 第2种写法
+//        readAll.forEach(x -> {
+//            String line = x.get("2").toString().substring(69, 101) + "\r\n";
+////            writer.write(line, true);
+//        });
+    }
+
+    @Test
+    public void test20200528172716() {
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/公报案例-再审.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+        System.out.println();
     }
 }

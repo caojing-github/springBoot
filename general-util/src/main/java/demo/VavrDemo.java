@@ -2,15 +2,15 @@ package demo;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import io.vavr.API;
-import io.vavr.CheckedConsumer;
-import io.vavr.Function3;
+import io.vavr.*;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,6 +29,39 @@ import static util.HBaseKit.findOne;
  */
 @Slf4j
 public class VavrDemo {
+
+    /**
+     * Option.of
+     */
+    @Test
+    public void test20200509143945() {
+        String a = null;
+        System.out.println(Option.of(a).getOrElse("666"));
+    }
+
+    /**
+     * 即使Optional.ofNullable中值不为null也会执行orElse中方法
+     */
+    @Test
+    public void test20200514151119() {
+        System.out.println(Optional.ofNullable("123").orElseGet(this::test20200514151120));
+        System.out.println(Optional.ofNullable("123").orElse(test20200514151120()));
+    }
+
+    public String test20200514151120() {
+        System.out.println("执行了");
+        return "abc";
+    }
+
+    /**
+     * Tuple2
+     */
+    @Test
+    public void test20200511144257() {
+        Tuple2<Integer, Integer> x = Tuple.of(0, 1);
+        System.out.println(x._1);
+        System.out.println(x._2);
+    }
 
     @Test
     public void test20200217050019() {

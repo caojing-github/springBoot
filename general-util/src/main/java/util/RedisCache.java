@@ -1,6 +1,7 @@
 package util;
 
 import com.alibaba.fastjson.JSON;
+import io.vavr.control.Try;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +16,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import static util.RedisCache.RedisConfig.DEV;
-import static util.RedisCache.RedisConfig.TEST;
 
 /**
  * redis工具类
@@ -53,6 +53,15 @@ public class RedisCache {
             200,
             10000,
             9
+        ),
+
+        REDIS_3(
+            "172.16.69.2",
+            6379,
+            null,
+            200,
+            10000,
+            13
         );
 
         private String host;
@@ -89,13 +98,8 @@ public class RedisCache {
     /**
      * 根据环境变量获取 RedisConfig
      */
-    private static RedisConfig getRedisConfigByEnv(String env) {
-        if ("dev".equals(env)) {
-            return DEV;
-        } else if ("test".equals(env)) {
-            return TEST;
-        }
-        return DEV;
+    public static RedisConfig getRedisConfigByEnv(String env) {
+        return Try.of(() -> RedisConfig.valueOf(env.toUpperCase())).getOrElse(DEV);
     }
 
     private static void initialPool() {

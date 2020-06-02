@@ -2,10 +2,12 @@ package demo;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 /**
  * 字符串操作
+ * org.apache.commons.lang3.StringUtils：https://www.cnblogs.com/guiblog/p/7986410.html
  *
  * @author CaoJing
  * @date 2020/03/06 16:24
@@ -102,5 +104,14 @@ public class StringDemo {
         System.out.println(5 << 1);
         System.out.println(5 << 2);
         System.out.println(5 << 3);
+    }
+
+    /**
+     * 删除空白字符 https://www.cnblogs.com/guiblog/p/7986410.html
+     */
+    @Test
+    public void test20200526124456() {
+        String s = " a b c d ";
+        System.out.println(StringUtils.deleteWhitespace(s));
     }
 }

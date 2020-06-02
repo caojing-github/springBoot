@@ -3,13 +3,16 @@ package util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Sets;
 import com.pivovarit.function.ThrowingRunnable;
 import com.pivovarit.function.ThrowingSupplier;
+import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
+import org.elasticsearch.action.admin.cluster.snapshots.create.CreateSnapshotRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -340,13 +343,106 @@ public final class ESKit {
     }
 
     /**
+     * 清洗当事人
+     */
+    @Test
+    public void test20200508153258() {
+        Set<String> set = Sets.newHashSet(
+            "提出",
+            "董事长",
+            "法官",
+            "案件",
+            "审判",
+            "起诉",
+            "羁押",
+            "阶段",
+            "离婚",
+            "故意伤害",
+            "赔偿",
+            "纠纷",
+            "违约",
+            "公诉",
+            "未履行",
+            "到期",
+            "债务人",
+            "无法",
+            "申请人",
+            "复议",
+            "不服",
+            "至本院",
+            "当庭",
+            "判决"
+        );
+        Consumer<List<JSONObject>> consumer = x -> x.forEach(y -> {
+            String litigant = y.getString("litigant");
+            if (set.contains(litigant)) {
+
+                BulkRequest request = new BulkRequest()
+                    .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                    .add(new DeleteRequest("suggest_dic_v3_litigant", "litigant", y.getString("id")));
+
+                Try.run(() -> ESKit.ES.PRO.client.bulk(request, RequestOptions.DEFAULT))
+                    .onFailure(e -> log.error("", e));
+            }
+        });
+        scroll("suggest_dic_v3_litigant", "litigant", "{\"match_all\":{}}", null, consumer);
+    }
+
+    @Test
+    public void test20200508172121() {
+        Set<String> set = Sets.newHashSet(
+            "提出",
+            "董事长",
+            "法官",
+            "案件",
+            "审判",
+            "起诉",
+            "羁押",
+            "阶段",
+            "离婚",
+            "故意伤害",
+            "赔偿",
+            "纠纷",
+            "违约",
+            "公诉",
+            "未履行",
+            "到期",
+            "债务人",
+            "无法",
+            "申请人",
+            "复议",
+            "不服",
+            "至本院",
+            "当庭",
+            "判决"
+        );
+
+        set.forEach(x -> {
+            String dsl = String.format("{\"match\":{\"litigant\":\"%s\"}}", x);
+
+            scroll("suggest_dic_v3_litigant", "litigant", dsl, null,
+                z -> z.forEach(y -> {
+                    String litigant = y.getString("litigant");
+                    if (litigant.contains(x)) {
+                        BulkRequest request = new BulkRequest()
+                            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                            .add(new DeleteRequest("suggest_dic_v3_litigant", "litigant", y.getString("id")));
+
+                        Try.run(() -> ESKit.ES.PRO.client.bulk(request, RequestOptions.DEFAULT))
+                            .onFailure(e -> log.error("", e));
+                    }
+                }));
+        });
+    }
+
+    /**
      * es查询导出文件
      */
     @Test
     public void test20200417164050() throws IOException {
-        BufferedWriter writer = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/标题为空案例.txt"));
+        BufferedWriter writer = new BufferedWriter(new java.io.FileWriter("/Users/caojing/Desktop/参照级别有问题.txt"));
 
-        String dsl = "{\"_source\":[\"jid\"],\"size\":1154,\"query\":{\"bool\":{\"must_not\":{\"exists\":{\"field\":\"all_caseinfo_casename\"}}}}}";
+        String dsl = "{\"size\":13,\"query\":{\"bool\":{\"must\":[{\"term\":{\"publish_type\":0}},{\"terms\":{\"source_type\":[1,2]}}]}}}";
         Request request = new Request("POST", "/judgement_1015/judgement/_search");
         request.setJsonEntity(dsl);
 
@@ -361,7 +457,8 @@ public final class ESKit {
         for (int i = 0; i < jsonArray.size(); i++) {
             String jid = jsonArray.getJSONObject(i).getJSONObject("_source").getString("jid");
             String url = "https://alphalawyer.cn/#/app/tool/result/%7B%5B%5D,%7D/detail/" + jid;
-            writer.write(url + "\r\n");
+//            writer.write(url + "\r\n");
+            writer.write(jid + "\r\n");
 //            writer.write(jid + "\r\n");
         }
         writer.flush();
@@ -386,5 +483,16 @@ public final class ESKit {
 
         writer.flush();
         writer.close();
+    }
+
+    /**
+     * 创建snapshot
+     */
+    @Test
+    public void test20200421161936() throws IOException {
+        // 根据索引"judgement_caojingtemp002"在仓库"online_pro"创建"caojing_snapshot"镜像
+        CreateSnapshotRequest snapshot = new CreateSnapshotRequest("online_pro", "caojing_snapshot")
+            .indices("judgement_caojingtemp002");
+        ES.PRO.client.snapshot().create(snapshot, RequestOptions.DEFAULT);
     }
 }

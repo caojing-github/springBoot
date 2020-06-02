@@ -1,23 +1,31 @@
 package demo;
 
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.ParserConfig;
+import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.junit.Test;
+import util.ESKit;
 import util.JdbcUtil;
 import util.RedisCache;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.alibaba.fastjson.serializer.SerializerFeature.PrettyFormat;
+import static util.ChineseNumToArabicNumUtil.arabicNumToChineseNum;
 
 /**
  * RedisCache测试类
@@ -180,5 +188,175 @@ public class RedisCacheDemo {
 
         // 金属制品业对应的大类行业
         System.out.println(RedisCache.getJedis().hget("\"companyIndustryHash\"", "\"金属制品业\""));
+    }
+
+    /**
+     * 庭审视频
+     */
+    @Test
+    public void test20200501204357() {
+        // 查询结果为 tingshen_video_v2/_doc/_search  _id
+        System.out.println(RedisCache.getJedis().get("tingshen_e6f652c4f5d311f1baa91cb943c623e9"));
+        // 删除
+        RedisCache.getJedis().del("tingshen_e6f652c4f5d311f1baa91cb943c623e9");
+    }
+
+    /**
+     * 法条沿革查询
+     */
+    @Test
+    public void test20200602102403() {
+        RedisCache.initialPool("redis_3");
+        String lid = "d1fbbf7d9df9b92112e7a1bfbf50d15e";
+        String location = "第六十三条";
+        String s = RedisCache.get("l:" + lid + ":" + location + ":h");
+        JSONArray jsonArray = JSON.parseArray(s);
+        System.out.println();
+    }
+
+    @Test
+    public void test20200602104835() throws IOException {
+        RedisCache.initialPool("redis_3");
+
+        // 民法典lid
+        String lid1 = "38c5d01eedd454cc67a12a22cfe4a84d";
+        Map<String, String> map = new LinkedHashMap<>();
+
+        GetRequest request = new GetRequest("law_upsert", "law_regu", lid1);
+        GetResponse response = ESKit.ES.PRO.client.get(request, RequestOptions.DEFAULT);
+        JSONObject jsonObject = JSON.parseObject(response.getSourceAsString());
+        JSONArray lawRegulationIndexesJsons = jsonObject.getJSONArray("law_regulation_article_jsons");
+
+        for (int i = 0; i < lawRegulationIndexesJsons.size(); i++) {
+            JSONObject j1 = lawRegulationIndexesJsons.getJSONObject(i);
+            String fullName = j1.getString("fullName");
+            String text5 = j1.getString("text");
+
+            if (StringUtils.isNotBlank(text5)) {
+                if (text5.startsWith("<br/>")) {
+                    text5 = StringUtils.removeFirst(text5, "<br/>");
+                }
+                map.put(fullName, text5);
+            }
+        }
+
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/民法典与前法映射 3.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+        Map<String, Map<String, String>> map2 = new LinkedHashMap<>();
+
+        readAll.forEach(x -> {
+            // 民法典
+            int s1;
+            try {
+                s1 = ((Long) x.get("民法典条数")).intValue();
+            } catch (Exception e) {
+                return;
+            }
+            // 跳过
+            if (s1 != 218) {
+                return;
+            }
+            String location1 = String.format("第%s条", arabicNumToChineseNum(s1));
+            String s = RedisCache.get("l:" + lid1 + ":" + location1 + ":h");
+            JSONArray jsonArray = JSON.parseArray(s);
+
+            if (jsonArray == null) {
+                jsonArray = new JSONArray();
+                String text1 = location1 + "　" + map.get(location1);
+
+                JSONObject jsonObject1 = new JSONObject()
+                    .fluentPut("actionName", "修改")
+                    .fluentPut("lid", lid1)
+                    .fluentPut("postingDate", "2020-05-28") // 发文日期
+                    .fluentPut("text", text1)
+                    .fluentPut("title", "中华人民共和国民法典");
+
+                jsonArray.add(jsonObject1);
+            }
+            // 以前的法规
+            String lid2 = x.get("旧法id").toString();
+            if (StringUtils.isBlank(lid2)) {
+                return;
+            }
+
+            GetRequest request2 = new GetRequest("law_upsert", "law_regu", lid2);
+            GetResponse response2 = Try.of(() -> ESKit.ES.PRO.client.get(request2, RequestOptions.DEFAULT)).onFailure(e -> log.error("", e)).get();
+            JSONObject jsonObject3 = JSON.parseObject(response2.getSourceAsString());
+            String title2 = jsonObject3.getString("title");
+
+            Map<String, String> tempMap = new LinkedHashMap<>();
+            if (map2.get(title2) == null) {
+                JSONArray lawRegulationIndexesJsons2 = jsonObject3.getJSONArray("law_regulation_article_jsons");
+
+                for (int i = 0; i < lawRegulationIndexesJsons2.size(); i++) {
+                    JSONObject j1 = lawRegulationIndexesJsons2.getJSONObject(i);
+                    String fullName = j1.getString("fullName");
+                    String text3 = j1.getString("text");
+
+                    if (StringUtils.isNotBlank(fullName)) {
+                        if (text3.startsWith("<br/>")) {
+                            text3 = StringUtils.removeFirst(text3, "<br/>");
+                        }
+                        tempMap.put(fullName, text3);
+                    }
+                }
+                map2.put(title2, tempMap);
+            }
+
+            // 发文日期，格式如：2020-05-28
+            String postingDate2 = jsonObject3.getString("posting_date")
+                .replace("年", "-")
+                .replace("月", "-")
+                .replace("日", "");
+            String s2 = x.get("旧法条数").toString();
+            if (StringUtils.isBlank(s2)) {
+                return;
+            }
+            String[] split = s2.split("；");
+            for (String s3 : split) {
+                String location2 = String.format("第%s条", arabicNumToChineseNum(Integer.parseInt(s3)));
+                String text2 = location2 + "　" + map2.get(title2).get(location2);
+
+                JSONObject jsonObject2 = new JSONObject()
+                    .fluentPut("actionName", "    ")
+                    .fluentPut("lid", lid2)
+                    .fluentPut("postingDate", postingDate2) // 发文日期
+                    .fluentPut("text", text2)
+                    .fluentPut("title", title2);
+
+                jsonArray.add(jsonObject2);
+            }
+
+            String value = jsonArray.toJSONString();
+            RedisCache.setString("l:" + lid1 + ":" + location1 + ":h", value);
+            System.out.println(value);
+        });
+        System.out.println();
+    }
+
+    /**
+     * 清理"法条沿革"
+     */
+    @Test
+    public void test20200602113022() {
+        RedisCache.initialPool("redis_3");
+
+        // 民法典lid
+        String lid1 = "38c5d01eedd454cc67a12a22cfe4a84d";
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/民法典与前法映射 3.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+
+        readAll.forEach(x -> {
+            // 民法典
+            int s1;
+            try {
+                s1 = ((Long) x.get("民法典条数")).intValue();
+            } catch (Exception e) {
+                return;
+            }
+            String location1 = String.format("第%s条", arabicNumToChineseNum(s1));
+            RedisCache.del("l:" + lid1 + ":" + location1 + ":h");
+        });
+        System.out.println("清理完成");
     }
 }
