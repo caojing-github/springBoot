@@ -6,8 +6,11 @@ import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -15,12 +18,10 @@ import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.junit.Test;
 import util.ESKit;
+import util.HttpUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -221,6 +222,43 @@ public class ExcelDemo {
     public void test20200528172716() {
         ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/公报案例-再审.xlsx");
         List<Map<String, Object>> readAll = reader.readAll();
+        System.out.println();
+    }
+
+    /**
+     * 民法典对照数据
+     */
+    @Test
+    public void test20200602203317() throws Exception {
+        //通过工具类创建writer
+        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/民法典对照数据.xlsx");
+        List<Map<String, Object>> rows = new ArrayList<>();
+
+        String url = "https://alphalawyer.cn/ilawregu-search/api/v1/lawregu/38c5d01eedd454cc67a12a22cfe4a84d?format=true&query=";
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put("token", "eyJhbGciOiJIUzI1NiJ9.eyJvZmZpY2VfaWQiOiI0ZDc5MmUzMTZhMDUxMWU2YWE3NjAwMTYzZTE2MmFkZCIsImRldmljZVR5cGUiOiJ3ZWIiLCJvZmZpY2VfbmFtZSI6ImlDb3VydCIsInVzZXJfdHlwZSI6IkEiLCJ1c2VyX2lkIjoiQzdDN0RFRkYwRTMyMTFFOUIzQzc3Q0QzMEFEM0FCMDYiLCJsb2dpblR5cGUiOiIxIiwidXNlcl9uYW1lIjoi5pu56Z2WIiwiaXNzIjoiaUxhdy5jb20iLCJleHAiOjE1OTMzMTE2NTM5NjQsImlhdCI6MTU5MDcxOTY1Mzk2NCwib2ZmaWNlVHlwZSI6ImludGVncmF0aW9uIn0.84l-tCNs0TpAa5bsEXVxqDbS3llw6FNdqg1fwZm5sVk");
+
+        JSONArray jsonArray = JSON.parseObject(EntityUtils.toString(HttpUtils.doGet(url, "", headers, Maps.newHashMap()).getEntity()), JSONObject.class)
+            .getJSONObject("data")
+            .getJSONArray("law_regulation_introductions");
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONArray vos = jsonArray.getJSONObject(i).getJSONArray("lawreguItemLegislationHistoryVos");
+            if (vos == null) {
+                continue;
+            }
+            for (int i1 = 1; i1 < vos.size(); i1++) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("《民法典》", vos.getJSONObject(0).getString("text"));
+                map.put("前法相关规定", vos.getJSONObject(i1).getString("title") + "\n" + vos.getJSONObject(i1).getString("text"));
+                rows.add(map);
+            }
+        }
+        //一次性写出内容，强制输出标题
+        writer.write(rows, true);
+        //关闭writer，释放内存
+        writer.close();
+
         System.out.println();
     }
 }

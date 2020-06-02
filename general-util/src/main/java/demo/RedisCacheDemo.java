@@ -202,18 +202,28 @@ public class RedisCacheDemo {
     }
 
     /**
-     * 法条沿革查询
+     * "法条沿革"查询
      */
     @Test
     public void test20200602102403() {
         RedisCache.initialPool("redis_3");
-        String lid = "d1fbbf7d9df9b92112e7a1bfbf50d15e";
-        String location = "第六十三条";
+        String lid = "38c5d01eedd454cc67a12a22cfe4a84d";
+        String location = "第五百零二条";
         String s = RedisCache.get("l:" + lid + ":" + location + ":h");
         JSONArray jsonArray = JSON.parseArray(s);
+        jsonArray.sort((x, y) -> {
+            int i = ((JSONObject) y).getString("postingDate").compareTo(((JSONObject) x).getString("postingDate"));
+            if (i == 0) {
+                return ((JSONObject) x).getString("order").compareTo(((JSONObject) y).getString("order"));
+            }
+            return i;
+        });
         System.out.println();
     }
 
+    /**
+     * 民法典"法条沿革"入redis
+     */
     @Test
     public void test20200602104835() throws IOException {
         RedisCache.initialPool("redis_3");
@@ -239,7 +249,6 @@ public class RedisCacheDemo {
                 map.put(fullName, text5);
             }
         }
-
         ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/民法典与前法映射 3.xlsx");
         List<Map<String, Object>> readAll = reader.readAll();
         Map<String, Map<String, String>> map2 = new LinkedHashMap<>();
@@ -252,10 +261,22 @@ public class RedisCacheDemo {
             } catch (Exception e) {
                 return;
             }
-            // 跳过
-            if (s1 != 218) {
-                return;
-            }
+//            boolean b = (s1 >= 110 && s1 <= 119) ||
+//                (s1 >= 210 && s1 <= 219) ||
+//                (s1 >= 310 && s1 <= 319) ||
+//                (s1 >= 410 && s1 <= 419) ||
+//                (s1 >= 510 && s1 <= 519) ||
+//                (s1 >= 610 && s1 <= 619) ||
+//                (s1 >= 710 && s1 <= 719) ||
+//                (s1 >= 810 && s1 <= 819) ||
+//                (s1 >= 910 && s1 <= 919);
+
+//            boolean b = s1 == 502;
+//
+//            // 跳过
+//            if (!b) {
+//                return;
+//            }
             String location1 = String.format("第%s条", arabicNumToChineseNum(s1));
             String s = RedisCache.get("l:" + lid1 + ":" + location1 + ":h");
             JSONArray jsonArray = JSON.parseArray(s);
@@ -278,7 +299,6 @@ public class RedisCacheDemo {
             if (StringUtils.isBlank(lid2)) {
                 return;
             }
-
             GetRequest request2 = new GetRequest("law_upsert", "law_regu", lid2);
             GetResponse response2 = Try.of(() -> ESKit.ES.PRO.client.get(request2, RequestOptions.DEFAULT)).onFailure(e -> log.error("", e)).get();
             JSONObject jsonObject3 = JSON.parseObject(response2.getSourceAsString());
@@ -302,7 +322,6 @@ public class RedisCacheDemo {
                 }
                 map2.put(title2, tempMap);
             }
-
             // 发文日期，格式如：2020-05-28
             String postingDate2 = jsonObject3.getString("posting_date")
                 .replace("年", "-")
@@ -322,11 +341,19 @@ public class RedisCacheDemo {
                     .fluentPut("lid", lid2)
                     .fluentPut("postingDate", postingDate2) // 发文日期
                     .fluentPut("text", text2)
-                    .fluentPut("title", title2);
+                    .fluentPut("title", title2)
+                    .fluentPut("order", Integer.parseInt(s3));
 
                 jsonArray.add(jsonObject2);
             }
-
+            // 按发文时间降序排序、相同法规按法条排序
+            jsonArray.sort((x1, y1) -> {
+                int i = ((JSONObject) y1).getString("postingDate").compareTo(((JSONObject) x1).getString("postingDate"));
+                if (i == 0) {
+                    return ((JSONObject) x1).getString("order").compareTo(((JSONObject) y1).getString("order"));
+                }
+                return i;
+            });
             String value = jsonArray.toJSONString();
             RedisCache.setString("l:" + lid1 + ":" + location1 + ":h", value);
             System.out.println(value);
@@ -354,9 +381,23 @@ public class RedisCacheDemo {
             } catch (Exception e) {
                 return;
             }
+//            if (s1 != 502) {
+//                return;
+//            }
             String location1 = String.format("第%s条", arabicNumToChineseNum(s1));
             RedisCache.del("l:" + lid1 + ":" + location1 + ":h");
         });
         System.out.println("清理完成");
+    }
+
+    /**
+     * 删除特定"法条沿革"
+     */
+    @Test
+    public void test20200602201420() {
+        RedisCache.initialPool("redis_3");
+        String lid = "38c5d01eedd454cc67a12a22cfe4a84d";
+        String location = "第五百零二条";
+        RedisCache.del("l:" + lid + ":" + location + ":h");
     }
 }

@@ -101,8 +101,12 @@ public class ChineseNumToArabicNumUtil {
                 }
                 sd += "零";
             }
-            sd += arabicNumToChineseNum(intInput % 100);
-
+            String sd1 = arabicNumToChineseNum(intInput % 100);
+            if (sd1.startsWith("十")) {
+                sd += "一" + sd1;
+            } else {
+                sd += sd1;
+            }
         } else if (si.length() == 4) {
             sd += (cnArr[intInput / 1000 - 1] + "千");
             if (String.valueOf(intInput % 1000).length() < 3) {
@@ -111,7 +115,12 @@ public class ChineseNumToArabicNumUtil {
                 }
                 sd += "零";
             }
-            sd += arabicNumToChineseNum(intInput % 1000);
+            String sd1 = arabicNumToChineseNum(intInput % 1000);
+            if (sd1.startsWith("十")) {
+                sd += "一" + sd1;
+            } else {
+                sd += sd1;
+            }
         } else if (si.length() == 5) {
             sd += (cnArr[intInput / 10000 - 1] + "万");
             if (String.valueOf(intInput % 10000).length() < 4) {
@@ -155,6 +164,6 @@ public class ChineseNumToArabicNumUtil {
 
     @Test
     public void test20200602143430() {
-        System.out.println(arabicNumToChineseNum(218));
+        System.out.println(arabicNumToChineseNum(1010));
     }
 }
