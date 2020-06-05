@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings("all")
 public class HttpUtils {
 
     private static final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();

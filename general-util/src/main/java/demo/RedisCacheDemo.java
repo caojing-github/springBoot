@@ -255,12 +255,11 @@ public class RedisCacheDemo {
 
         readAll.forEach(x -> {
             // 民法典
-            int s1;
-            try {
-                s1 = ((Long) x.get("民法典条数")).intValue();
-            } catch (Exception e) {
+            if (x.get("民法典条数") == null || StringUtils.isBlank(x.get("民法典条数").toString())) {
                 return;
             }
+            int s1 = ((Long) x.get("民法典条数")).intValue();
+
 //            boolean b = (s1 >= 110 && s1 <= 119) ||
 //                (s1 >= 210 && s1 <= 219) ||
 //                (s1 >= 310 && s1 <= 319) ||
