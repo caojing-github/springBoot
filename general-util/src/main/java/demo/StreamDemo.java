@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 描述
+ * java8 Stream示例
  *
  * @author CaoJing
  * @date 2020/06/05 10:23
