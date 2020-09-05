@@ -92,6 +92,37 @@ public final class ESKit {
     }
 
     /**
+     * 通过DSL查询es
+     *
+     * @param env       es环境
+     * @param index     es索引
+     * @param indexType es索引类型
+     * @param dsl       dsl查询语句
+     * @return JSONObject
+     * @author CaoJing
+     * @date 2020/07/10 20:17:14
+     */
+    public static JSONObject getByDSL(ES env, String index, String indexType, String dsl) throws IOException {
+        Request request = new Request("POST", String.format("/%s/%s/_search", index, indexType));
+        request.setJsonEntity(dsl);
+
+        RestClient client = env.client.getLowLevelClient();
+        Response response = client.performRequest(request);
+//        client.close();
+        return JSON.parseObject(EntityUtils.toString(response.getEntity()));
+    }
+
+    /**
+     * getByDSL
+     */
+    @Test
+    public void test20200710201905() throws IOException {
+        String dsl = "{\"_source\":[\"lid\",\"title\",\"simplify_title\",\"time_limited\",\"effective_range\",\"posting_date\"],\"query\":{\"term\":{\"lid\":\"3cb09b9eced07d6ef2e0162e677471cf\"}}}";
+        JSONObject jsonObject = getByDSL(ES.PRO, "law_upsert", "law_regu", dsl);
+        System.out.println(jsonObject.toString(PrettyFormat));
+    }
+
+    /**
      * 根据id查询
      */
     @Test

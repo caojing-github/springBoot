@@ -1,6 +1,7 @@
 package demo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import io.vavr.*;
 import io.vavr.control.Option;
@@ -10,6 +11,7 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -100,6 +102,17 @@ public class VavrDemo {
     }
 
     /**
+     * Try的filter不同于Optional的filter起到过滤作用，不满足条件的视为失败
+     */
+    @Test
+    public void test20200706193041() {
+        Try.success(null)
+            .filter(Objects::nonNull)
+            .andThenTry((CheckedConsumer<Object>) System.out::println)
+            .onFailure(e -> System.out.println("执行失败了"));
+    }
+
+    /**
      * getOrElseTry
      */
     @Test
@@ -174,5 +187,25 @@ public class VavrDemo {
     public void test20200322192529() {
         Function3<String, String, String, String> f = (x, y, z) -> x + y + z;
         System.out.println(f.apply("曹靖", "将来", "财富自由"));
+    }
+
+    /**
+     * Tuple 元组
+     */
+    @Test
+    public void test20200707233751() {
+        JSONObject jsonObject1 = new JSONObject()
+            .fluentPut("name", "caojing");
+
+        JSONObject jsonObject2 = new JSONObject()
+            .fluentPut("name", "caojing666");
+
+        JSONObject jsonObject3 = new JSONObject()
+            .fluentPut("name", "caojing888");
+
+        Tuple3<JSONObject, JSONObject, JSONObject> tuple3 = Tuple.of(jsonObject1, jsonObject2, jsonObject3);
+        JSONObject t1 = tuple3._1;
+        JSONObject t2 = tuple3._2;
+        JSONObject t3 = tuple3._3;
     }
 }

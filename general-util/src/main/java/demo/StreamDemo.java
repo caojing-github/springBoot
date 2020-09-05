@@ -173,4 +173,14 @@ public class StreamDemo {
         //map : {false=[1, 2, 3], true=[4, 5]}
         System.out.println("map : " + map);
     }
+
+    /**
+     * 转LinkedList
+     */
+    @Test
+    public void test20200708164052() {
+//        LinkedList<String> collectToCollection = Stream.of(
+//            "Monkey", "Lion", "Giraffe", "Lemur", "Lion"
+//        ).collect(Collectors.toCollection(LinkedList::new));
+    }
 }

@@ -28,6 +28,7 @@ public class StopWatchDemo {
 
         System.out.println(sw.prettyPrint());
         System.out.println(sw.getTotalTimeMillis());
+
         System.out.println(sw.getLastTaskName());
         System.out.println(sw.getLastTaskInfo());
         System.out.println(sw.getTaskCount());

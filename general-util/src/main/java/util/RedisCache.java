@@ -25,6 +25,7 @@ import static util.RedisCache.RedisConfig.DEV;
  */
 @Data
 @Slf4j
+@SuppressWarnings("all")
 public class RedisCache {
 
     public enum RedisConfig {
@@ -39,7 +40,7 @@ public class RedisCache {
             "ENvcxYwhGkWF8XrM",
             200,
             10000,
-            1
+            13
         ),
 
         /**
@@ -55,8 +56,23 @@ public class RedisCache {
             9
         ),
 
+        /**
+         * 法条沿革、条文主旨、法条解读（法规线上、dev环境）
+         */
         REDIS_3(
             "172.16.69.2",
+            6379,
+            null,
+            200,
+            10000,
+            13
+        ),
+
+        /**
+         * 法条沿革、条文主旨、法条解读（法规local环境）
+         */
+        REDIS_4(
+            "172.16.71.2",
             6379,
             null,
             200,
@@ -103,22 +119,16 @@ public class RedisCache {
     }
 
     private static void initialPool() {
+        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        config.setMaxIdle(maxIdle);
+        config.setMaxWaitMillis(maxWait);
+        config.setTestOnReturn(false);
+        config.setTestWhileIdle(false);
+        config.setBlockWhenExhausted(true);
+        config.setLifo(false);
+        config.setSoftMinEvictableIdleTimeMillis(120000);
 
-        try {
-            GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-            config.setMaxIdle(maxIdle);
-            config.setMaxWaitMillis(maxWait);
-            config.setTestOnReturn(false);
-            config.setTestWhileIdle(false);
-            config.setBlockWhenExhausted(true);
-            config.setLifo(false);
-            config.setSoftMinEvictableIdleTimeMillis(120000);
-
-            jedisPool = new JedisPool(config, host, port, 100000, StringUtils.isBlank(password) ? null : password, datebase);
-
-        } catch (Exception e) {
-            log.error("redis连接池初始化失败", e);
-        }
+        jedisPool = new JedisPool(config, host, port, 100000, StringUtils.isBlank(password) ? null : password, datebase);
     }
 
     /**
@@ -126,25 +136,23 @@ public class RedisCache {
      */
     public static void initialPool(String env) {
         RedisConfig redisConfig = getRedisConfigByEnv(env);
-        try {
-            GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-            config.setMaxIdle(redisConfig.maxIdle);
-            config.setMaxWaitMillis(redisConfig.maxWait);
-            config.setTestOnReturn(false);
-            config.setTestWhileIdle(false);
-            config.setBlockWhenExhausted(true);
-            config.setLifo(false);
-            config.setSoftMinEvictableIdleTimeMillis(120000);
+        GenericObjectPoolConfig config = new GenericObjectPoolConfig();
+        config.setMaxIdle(redisConfig.maxIdle);
+        config.setMaxWaitMillis(redisConfig.maxWait);
+        config.setTestOnReturn(false);
+        config.setTestWhileIdle(false);
+        config.setBlockWhenExhausted(true);
+        config.setLifo(false);
+        config.setSoftMinEvictableIdleTimeMillis(120000);
 
-            jedisPool = new JedisPool(
-                config, redisConfig.host, redisConfig.port,
-                100000, StringUtils.isBlank(redisConfig.password) ? null : redisConfig.password,
-                redisConfig.datebase
-            );
-
-        } catch (Exception e) {
-            log.error("redis连接池初始化失败", e);
-        }
+        jedisPool = new JedisPool(
+            config,
+            redisConfig.host,
+            redisConfig.port,
+            100000,
+            StringUtils.isBlank(redisConfig.password) ? null : redisConfig.password,
+            redisConfig.datebase
+        );
     }
 
     /**
@@ -165,11 +173,9 @@ public class RedisCache {
      * @return Jedis
      */
     public static synchronized Jedis getJedis() {
-
         if (jedisPool == null) {
             initialPool();
         }
-
         return Optional.ofNullable(jedisPool).map(JedisPool::getResource).orElse(null);
     }
 
@@ -590,7 +596,7 @@ public class RedisCache {
         }
     }
 
-    public static void hmset(String key, Map map) {
+    public static void hmset(String key, Map<String, String> map) {
         Jedis jedis = getJedis();
         jedis.hmset(key, map);
         returnResource(jedis);
@@ -886,14 +892,14 @@ public class RedisCache {
             Long pageL = new Long(page);
             Long pagesizeL = new Long(pagesize);
             Long startIndex = ((pageL - 1) * pagesizeL);
-            Long stopIndex = (pageL * pagesizeL - 1l);
+            Long stopIndex = (pageL * pagesizeL - 1L);
             tuple = jedis.zrangeWithScores(key, startIndex, stopIndex);
         } else if (sort == 1) {
             //倒叙
             Long pageL = new Long(page);
             Long pagesizeL = new Long(pagesize);
             Long startIndex = ((pageL - 1) * pagesizeL);
-            Long stopIndex = (pageL * pagesizeL - 1l);
+            Long stopIndex = (pageL * pagesizeL - 1L);
             tuple = jedis.zrevrangeWithScores(key, startIndex, stopIndex);
         } else {
             //倒叙

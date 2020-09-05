@@ -2,8 +2,12 @@ package demo;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
+import java.io.IOException;
 
 /**
  * 字符串操作
@@ -12,6 +16,7 @@ import org.junit.Test;
  * @author CaoJing
  * @date 2020/03/06 16:24
  */
+@Slf4j
 public class StringDemo {
 
     /**
@@ -112,6 +117,21 @@ public class StringDemo {
     @Test
     public void test20200526124456() {
         String s = " a b c d ";
+        System.out.println(StringUtils.deleteWhitespace(s));
+    }
+
+    @Test
+    public void test20200701173934() throws IOException {
+        String s = IOUtils.toString(StringDemo.class.getClassLoader().getResourceAsStream("allCaseCacheMap.json"));
+        System.out.println();
+    }
+
+    /**
+     * deleteWhitespace
+     */
+    @Test
+    public void test20200713203510() {
+        String s = "(一)合同定义\\n    本条第1款是关于合同定义的规定,";
         System.out.println(StringUtils.deleteWhitespace(s));
     }
 }

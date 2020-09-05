@@ -1,9 +1,13 @@
 package util;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import io.vavr.CheckedRunnable;
+import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.mail.SimpleMailMessage;
@@ -22,8 +26,10 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Properties;
@@ -40,6 +46,7 @@ import static util.ThreadPoolManager.THREAD_POOL;
  */
 @Slf4j
 @ControllerAdvice
+@SuppressWarnings("all")
 public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
 
     /**
@@ -189,15 +196,107 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
      * @date 2019/10/15 15:57
      */
     public static void sendMail(String subject, String content) {
+        // 728571721@qq.com 鑫辉邮箱
+        String[] to = {"caojing@icourt.cc", "dujiang@icourt.cc", "zhangjunlei@icourt.cc", "728571721@qq.com"};
+        sendMail(subject, content, to);
+    }
+
+    /**
+     * 异步发送邮件（阿里云和华为云不支持smtp 25端口，改用ssl 465端口发送才好使）
+     *
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     * @param to      收件人，如："caojing@icourt.cc", "dujiang@icourt.cc", "zhangjunlei@icourt.cc", "728571721@qq.com"
+     * @author CaoJing
+     * @date 2019/10/15 15:57
+     */
+    public static void sendMail(String subject, String content, String[] to) {
         THREAD_POOL.submit(() -> {
-            JavaMailSenderImpl sender = getMailSender();
+            Properties properties = new Properties();
+            // 开启认证
+            properties.setProperty("mail.smtp.auth", "true");
+            // 启用调试
+//            properties.setProperty("mail.debug", "true");
+            // 设置链接超时
+            properties.setProperty("mail.smtp.timeout", "25000");
+            // 设置端口
+            properties.setProperty("mail.smtp.port", "465");
+            // 设置ssl端口
+            properties.setProperty("mail.smtp.socketFactory.port", "465");
+            properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+            properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+            JavaMailSenderImpl sender = new JavaMailSenderImpl();
+            sender.setHost("smtp.exmail.qq.com");
+            sender.setDefaultEncoding("UTF-8");
+            sender.setUsername("caojing@icourt.cc");
+            sender.setPassword("i113234CJ");
+            sender.setPort(465);
+            sender.setJavaMailProperties(properties);
 
             SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setFrom(FROM);
-            msg.setTo(TO);
+            msg.setFrom("caojing@icourt.cc");
+            msg.setTo(to);
             msg.setSubject(subject);
             msg.setText(content);
             sender.send(msg);
+        });
+    }
+
+    /**
+     * 异步发送含有附件邮件（阿里云和华为云不支持smtp 25端口，改用ssl 465端口发送才好使）
+     *
+     * @param subject   邮件主题
+     * @param html      html格式邮件内容
+     * @param filePaths 文件绝对路径
+     * @param to        收件人，如："caojing@icourt.cc", "dujiang@icourt.cc", "zhangjunlei@icourt.cc", "728571721@qq.com"
+     * @author CaoJing
+     * @date 2019/10/15 15:57
+     */
+    public static void sendMail(String subject, String html, String[] filePaths, String[] to) {
+        // 解决附件中文名称乱码，如附件名称：未解析文书id修复情况-2018-08-26.xlsx
+        System.setProperty("mail.mime.splitlongparameters", "false");
+        THREAD_POOL.submit(() -> {
+            Properties properties = new Properties();
+            // 开启认证
+            properties.setProperty("mail.smtp.auth", "true");
+            // 启用调试
+//            properties.setProperty("mail.debug", "true");
+            // 设置链接超时
+            properties.setProperty("mail.smtp.timeout", "25000");
+            // 设置端口
+            properties.setProperty("mail.smtp.port", "465");
+            // 设置ssl端口
+            properties.setProperty("mail.smtp.socketFactory.port", "465");
+            properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+            properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.setProperty("mail.mime.splitlongparameters", "false");
+
+            JavaMailSenderImpl sender = new JavaMailSenderImpl();
+            sender.setHost("smtp.exmail.qq.com");
+            sender.setDefaultEncoding("UTF-8");
+            sender.setUsername("caojing@icourt.cc");
+            sender.setPassword("i113234CJ");
+            sender.setPort(465);
+            sender.setJavaMailProperties(properties);
+
+            CheckedRunnable runnable = () -> {
+                MimeMessage msg = sender.createMimeMessage();
+                // 设置utf-8或GBK编码，否则邮件会有乱码
+                MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
+                helper.setFrom("caojing@icourt.cc", "英俊潇洒风流倜傥宇宙无敌靖哥哥");
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setText(html, true);
+
+                for (String filePath : filePaths) {
+                    FileSystemResource file = new FileSystemResource(new File(filePath));
+                    String fileName = StrUtil.subAfter(filePath, "/", true);
+                    helper.addAttachment(fileName, file);
+                }
+                sender.send(msg);
+            };
+            Try.run(runnable).onFailure(e -> log.error("附件邮件发送异常", e));
         });
     }
 
@@ -388,8 +487,26 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
         return body;
     }
 
+    /**
+     * 发送html邮件
+     */
     @Test
     public void test20191229175800() {
         sendHtmlMail("测试邮件", "<p><span style=\"color:#E53333;\">异常日志</span></p><p>正常日志</p><p><br/></p>");
+    }
+
+    /**
+     * 发送附件邮件
+     */
+    @Test
+    public void test20200826100729() throws UnsupportedEncodingException {
+        String filePath = new String("/Users/caojing/Documents/未解析文书id修复情况-2020-09-04.xlsx");
+        String fileName = StrUtil.subAfter(filePath, "/", true);
+        // 728571721@qq.com 鑫辉邮箱
+        String[] to = {"caojing@icourt.cc", "728571721@qq.com", "yujianing@icourt.cc", "zhangjin@icourt.cc", "lishaosong@icourt.cc", "meng@icourt.cc"};
+//        String[] to = {"caojing@icourt.cc"};
+        String content = String.format("<b><font color=\"#ff0000\">请注意查看附件：%s</font></b>", fileName);
+        sendMail(fileName.replace(".xlsx", ""), content, new String[]{filePath}, to);
+        while (true) ;
     }
 }

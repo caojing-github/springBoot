@@ -1,6 +1,7 @@
 package demo;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -54,6 +55,8 @@ public class MapDemo {
         /**
          * computeIfAbsent
          * 不存在key或value为null时才操作
+         * 此方法返回与指定键关联的当前（现有或计算）值，如果映射返回null，则返回null
+         * https://www.cjavapy.com/article/197/
          */
         myMap.computeIfAbsent(keyC, k -> k + "computeIfAbsent");
         myMap.computeIfAbsent(keyG, k -> k + "computeIfAbsent");
@@ -84,5 +87,18 @@ public class MapDemo {
     public void test20200320154206() {
         Map map = new HashMap(8);
         System.out.println(map.size());
+    }
+
+    /**
+     * getOrDefault
+     */
+    @Test
+    public void test20200707122327() {
+        Map<String, String> map = Maps.newHashMap();
+        map.put("a", "a");
+        map.put("b", "b");
+        map.put("c", null);
+        System.out.println(map.getOrDefault("c", "c_Default"));
+        System.out.println(map.getOrDefault("d", "d_Default"));
     }
 }

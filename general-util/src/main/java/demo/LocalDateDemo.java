@@ -112,4 +112,15 @@ public class LocalDateDemo {
         localDate = LocalDate.parse("20190910", DateTimeFormatter.BASIC_ISO_DATE);
         localDate = LocalDate.parse("2019-09-10", DateTimeFormatter.ISO_LOCAL_DATE);
     }
+
+    /**
+     * 45天前
+     */
+    @Test
+    public void test20200617171739() {
+        // 获取当前年月日
+        LocalDate localDate = LocalDate.now();
+        LocalDate localDate2 = localDate.minusDays(45);
+        System.out.println(localDate2);
+    }
 }

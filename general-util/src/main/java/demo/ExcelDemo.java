@@ -12,6 +12,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import com.pivovarit.function.ThrowingSupplier;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.EntityUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -26,6 +29,7 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.junit.Test;
 import util.ESKit;
 import util.HttpUtils;
@@ -33,6 +37,7 @@ import util.HttpUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -46,6 +51,7 @@ import static util.HttpUtils.doGet;
  * @author CaoJing
  * @date 2020/03/30 01:15
  */
+@Slf4j
 public class ExcelDemo {
 
     /**
@@ -262,6 +268,23 @@ public class ExcelDemo {
             .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
 
         readAll.forEach(x -> request.add(new DeleteRequest("suggest-dic_v11_judge_court", "judgeCourt", (String) x.get("id"))));
+
+        BulkResponse bulkResponse = ESKit.ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
+    }
+
+    /**
+     * 律师事务所Suggest数据批量删除
+     */
+    @Test
+    public void test20200902165757() throws IOException {
+        // Excel读取-ExcelReader https://hutool.cn/docs/#/poi/Excel%E8%AF%BB%E5%8F%96-ExcelReader
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Library/Containers/com.tencent.WeWorkMac/Data/Library/Application Support/WXWork/Data/1688851822093346/Cache/File/2020-09/需要删除的律师事务所Suggest数据.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+
+        BulkRequest request = new BulkRequest()
+            .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
+
+        readAll.forEach(x -> request.add(new DeleteRequest("suggest-dic_v11_lawfirm", "lawfirm", (String) x.get("id"))));
 
         BulkResponse bulkResponse = ESKit.ES.PRO.client.bulk(request, RequestOptions.DEFAULT);
     }
@@ -524,5 +547,116 @@ public class ExcelDemo {
         FileOutputStream output = new FileOutputStream(new File("/Users/caojing/Desktop/民法典对照.xlsx"));
         wb.write(output);
         output.flush();
+    }
+
+    /**
+     * 处理宁夏辅德数据
+     */
+    @Test
+    public void test20200629115900() {
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/副本 宁夏辅德.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+
+        List<Map<String, Object>> rows = readAll
+            .stream()
+            .map(x -> {
+                Map<String, Object> map = new LinkedHashMap<>();
+                String lid = x.get("lid").toString();
+
+                // 尽量还是使用dsl解析
+                FetchSourceContext sourceContext = new FetchSourceContext(true, new String[]{"title", "eff_level", "dispatch_authority", "posting_date_str"}, new String[]{});
+                GetRequest request = new GetRequest("law_upsert", "law_regu", lid)
+                    .fetchSourceContext(sourceContext);
+
+                GetResponse response;
+                try {
+                    response = ESKit.ES.PRO.client.get(request, RequestOptions.DEFAULT);
+                } catch (IOException e) {
+                    log.error("", e);
+                    return map;
+                }
+                JSONObject jsonObject = JSON.parseObject(response.getSourceAsString());
+                if (jsonObject == null) {
+                    log.error("lid:{} title为空", lid);
+                    return map;
+                }
+                map.put("lid", lid);
+                map.put("标题", jsonObject.getString("title"));
+                map.put("效力级别", jsonObject.getString("eff_level"));
+                map.put("发文机关", jsonObject.getString("dispatch_authority"));
+                map.put("发文日期", jsonObject.getString("posting_date_str"));
+                map.put("a", x.get("a").toString());
+                return map;
+
+            }).filter(MapUtils::isNotEmpty)
+            .collect(Collectors.toList());
+
+        //通过工具类创建writer
+        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/宁夏辅德-处理后.xlsx");
+        // 列自适应
+        writer.autoSizeColumnAll();
+        //一次性写出内容，强制输出标题
+        writer.write(rows, true);
+        //关闭writer，释放内存
+        writer.close();
+    }
+
+    /**
+     * 通过excel解析法规
+     *
+     * @author CaoJing
+     * @date 2020/07/03 16:28:52
+     */
+    @Test
+    public void parseByXlsx() {
+        URL url = ExcelDemo.class.getClassLoader().getResource("parse.xlsx");
+        ExcelReader reader = ExcelUtil.getReader(new File(url.getPath()));
+        List<Map<String, Object>> readAll = reader.readAll();
+        readAll.forEach(x -> {
+            String lid = x.get("by_field_0").toString();
+            log.info("已解析lid:{}", lid);
+        });
+        log.info("通过excel解析完成");
+    }
+
+    /**
+     * 津姐的需求
+     */
+    @Test
+    public void test20200729122210() {
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/副本类案规则案例案号.xlsx");
+        List<Map<String, Object>> rows = reader.readAll();
+        rows.forEach(x -> {
+            if (x.get("案号") == null) {
+                return;
+            }
+            String s = x.get("案号").toString();
+            String dsl = String.format("{\"_source\":[\"jid\",\"all_caseinfo_casename\"],\"query\":{\"bool\":{\"must\":[{\"match_phrase\":{\"all_caseinfo_casenumber\":\"%s\"}},{\"term\":{\"publish_type\":7}}]}}}", s);
+
+            JSONObject jsonObject = ThrowingSupplier.sneaky(() -> ESKit.getByDSL(ESKit.ES.PRO, "judgement_1015", "judgement", dsl)).get();
+            JSONArray jsonArray = jsonObject.getJSONObject("hits").getJSONArray("hits");
+
+            if (!jsonArray.isEmpty()) {
+                JSONObject source = jsonArray.getJSONObject(0).getJSONObject("_source");
+                x.put("优案评析标题", source.getString("all_caseinfo_casename"));
+                x.put("优案评析url", getUrl(source.getString("jid")));
+                return;
+            }
+            log.warn("{} 没找到对应优案评析", s);
+        });
+
+        //通过工具类创建writer
+        ExcelWriter writer = ExcelUtil.getWriter("/users/caojing/Desktop/副本类案规则案例案号-处理后.xlsx");
+        writer.setStyleSet(null);
+        // 列自适应
+        writer.autoSizeColumnAll();
+        //一次性写出内容，强制输出标题
+        writer.write(rows, true);
+        //关闭writer，释放内存
+        writer.close();
+    }
+
+    public String getUrl(String jid) {
+        return String.format("https://alphalawyer.cn/#/app/tool/excellentCase/detail/%s", jid);
     }
 }

@@ -1,11 +1,13 @@
 package demo;
 
+import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.ParserConfig;
+import com.google.common.collect.Maps;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,6 +16,9 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.junit.Test;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 import util.ESKit;
 import util.JdbcUtil;
 import util.RedisCache;
@@ -34,6 +39,7 @@ import static util.ChineseNumToArabicNumUtil.arabicNumToChineseNum;
  * @date 2019/10/22 20:49
  */
 @Slf4j
+@SuppressWarnings("all")
 public class RedisCacheDemo {
 
     /**
@@ -208,7 +214,7 @@ public class RedisCacheDemo {
     public void test20200602102403() {
         RedisCache.initialPool("redis_3");
         String lid = "38c5d01eedd454cc67a12a22cfe4a84d";
-        String location = "第五百零二条";
+        String location = "第五百三十三条";
         String s = RedisCache.get("l:" + lid + ":" + location + ":h");
         JSONArray jsonArray = JSON.parseArray(s);
         jsonArray.sort((x, y) -> {
@@ -249,9 +255,10 @@ public class RedisCacheDemo {
                 map.put(fullName, text5);
             }
         }
-        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/民法典与前法映射 3.xlsx");
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Desktop/民法典法条沿革第二版-2020.07.02.xlsx");
         List<Map<String, Object>> readAll = reader.readAll();
         Map<String, Map<String, String>> map2 = new LinkedHashMap<>();
+        Map<Integer, Boolean> deleteMap = new LinkedHashMap<>();
 
         readAll.forEach(x -> {
             // 民法典
@@ -270,13 +277,19 @@ public class RedisCacheDemo {
 //                (s1 >= 810 && s1 <= 819) ||
 //                (s1 >= 910 && s1 <= 919);
 
-//            boolean b = s1 == 502;
+//            boolean b = s1 == 1064;
 //
 //            // 跳过
 //            if (!b) {
 //                return;
 //            }
             String location1 = String.format("第%s条", arabicNumToChineseNum(s1));
+            if (!Boolean.TRUE.equals(deleteMap.get(s1))) {
+                RedisCache.del("l:" + lid1 + ":" + location1 + ":h");
+                deleteMap.put(s1, true);
+                System.out.println(location1 + "已清理");
+            }
+
             String s = RedisCache.get("l:" + lid1 + ":" + location1 + ":h");
             JSONArray jsonArray = JSON.parseArray(s);
 
@@ -396,7 +409,141 @@ public class RedisCacheDemo {
     public void test20200602201420() {
         RedisCache.initialPool("redis_3");
         String lid = "38c5d01eedd454cc67a12a22cfe4a84d";
-        String location = "第五百零二条";
+        String location = "第一千零六十四条";
         RedisCache.del("l:" + lid + ":" + location + ":h");
+    }
+
+    /**
+     * 民法典相关法规数据存储（由佳宁提供）
+     */
+    @Test
+    public void test20200710162704() {
+        JSONArray jsonArray = ExcelUtil.getReader("/Users/caojing/Desktop/民法典相关法规数据-按此顺序排序的副本.xlsx")
+            .readAll()
+            .stream()
+            .map(x ->
+                new JSONObject()
+                    .fluentPut("lid", x.get("lid").toString())
+                    .fluentPut("title", x.get("title").toString())
+                    .fluentPut("dispatchAuthority", x.get("dispatchAuthority").toString())
+                    .fluentPut("postingDateStr", x.get("postingDateStr").toString())
+            ).collect(Collectors.toCollection(JSONArray::new));
+
+        RedisCache.initialPool("redis_3");
+        // 民法典相关法规key
+        String key = "l:" + "38c5d01eedd454cc67a12a22cfe4a84d" + ":" + "relevantLaws";
+        RedisCache.setString(key, jsonArray.toJSONString());
+    }
+
+    @Test
+    public void test20200710195245() {
+        RedisCache.initialPool("redis_3");
+        // 民法典相关法规key
+        String key = "l:" + "38c5d01eedd454cc67a12a22cfe4a84d" + ":" + "relevantLaws";
+        RedisCache.del(key);
+    }
+
+    /**
+     * 民法典相关法规数据查询
+     */
+    @Test
+    public void test20200710165215() {
+        RedisCache.initialPool("redis_3");
+        // 民法典相关法规key
+        String key = "l:" + "38c5d01eedd454cc67a12a22cfe4a84d" + ":" + "relevantLaws";
+        JSONArray jsonArray = JSON.parseArray(RedisCache.get(key));
+        System.out.println();
+    }
+
+    /**
+     * 民法典相关文献数据存储
+     */
+    @Test
+    public void test20200710171053() {
+        String s = ResourceUtil.readUtf8Str("civil_code_related_documents_processed.json");
+        JSONArray jsonArray = JSON.parseArray(s);
+
+        RedisCache.initialPool("redis_3");
+        // 民法典相关文献key
+        String key = "l:" + "38c5d01eedd454cc67a12a22cfe4a84d" + ":" + "literatures";
+        RedisCache.setString(key, jsonArray.toJSONString());
+    }
+
+    /**
+     * 民法典相关文献数据查询
+     */
+    @Test
+    public void test20200710171748() {
+        RedisCache.initialPool("redis_3");
+        // 民法典相关法规key
+        String key = "l:" + "38c5d01eedd454cc67a12a22cfe4a84d" + ":" + "literatures";
+        JSONArray jsonArray = JSON.parseArray(RedisCache.get(key));
+        System.out.println();
+    }
+
+    /**
+     * scan：迭代当前数据库中的所有数据库key http://doc.redisfans.com/key/scan.html
+     */
+    @Test
+    public void test20200704081803() {
+        Jedis jedis = RedisCache.getJedis();
+        String cursor = "0";
+        do {
+            ScanResult<String> r = jedis.scan(cursor);
+            System.out.println(JSON.toJSONString(r.getResult()));
+            cursor = r.getCursor();
+        } while (!"0".equals(cursor));
+    }
+
+    /**
+     * hscan：迭代哈希键中的键值对
+     */
+    @Test
+    public void test20200704084600() {
+        Map<String, String> map = Maps.newHashMap();
+        map.put("k1", "v1");
+        map.put("k2", "v2");
+        map.put("k3", "v3");
+        map.put("k4", "v4");
+        map.put("k5", "v5");
+        map.put("k6", "v6");
+        map.put("k7", "v7");
+
+        RedisCache.hmset("caojing", map);
+        Jedis jedis = RedisCache.getJedis();
+        String cursor = "0";
+        do {
+//            ScanResult<Map.Entry<String, String>> r = jedis.hscan("caojing", "0");
+            // 在迭代一个编码为整数集合（intset，一个只由整数值构成的小集合）、 或者编码为压缩列表（ziplist，由不同值构成的一个小哈希或者一个小有序集合）时， 增量式迭代命令通常会无视 COUNT 选项指定的值， 在第一次迭代就将数据集包含的所有元素都返回给用户。
+            ScanResult<Map.Entry<String, String>> r = jedis.hscan("caojing", cursor, new ScanParams().count(1));
+            System.out.println(JSON.toJSONString(r.getResult()));
+            cursor = r.getCursor();
+        } while (!"0".equals(cursor));
+    }
+
+    /**
+     * redisTemplate hash scan示例
+     */
+    @Test
+    public void test20200704092952() {
+//        Long size = redisTemplate.opsForHash().size(this.keyIndustrySet);
+//        HashMap<String, String> result = new HashMap((int)(size + 10L), 1.0F);
+//        if (size > 0L) {
+//            Cursor cursor = this.redisTemplate11.opsForHash().scan(this.keyIndustrySet, ScanOptions.NONE);
+//
+//            while(cursor.hasNext()) {
+//                Map.Entry<Object, Object> next = (Map.Entry)cursor.next();
+//                Object key = next.getKey();
+//                Object value = next.getValue();
+//                result.put((String)key, (String)value);
+//            }
+//
+//            try {
+//                cursor.close();
+//            } catch (IOException var7) {
+//                this.logger.error("", var7);
+//            }
+//        }
+//        return result;
     }
 }

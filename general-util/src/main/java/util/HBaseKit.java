@@ -84,6 +84,6 @@ public class HBaseKit {
      */
     @Test
     public void test20200211143947() throws IOException {
-        deleteRow("judgement_ds", "D3B2D9D355FD936F6E3DA7567048838F");
+        deleteRow("judgement_ds", "34D0B069A5A6E9864470F26AF40BF37D");
     }
 }
