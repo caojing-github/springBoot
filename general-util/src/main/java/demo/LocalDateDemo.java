@@ -7,6 +7,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 
@@ -122,5 +123,80 @@ public class LocalDateDemo {
         LocalDate localDate = LocalDate.now();
         LocalDate localDate2 = localDate.minusDays(45);
         System.out.println(localDate2);
+    }
+
+    /**
+     * 最近几年
+     */
+    @Test
+    public void test20201015192758() {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+
+        System.out.println(now.format(df));
+        System.out.println(now.minusYears(1).format(df));
+        System.out.println(now.minusYears(3).format(df));
+        System.out.println(now.minusYears(5).format(df));
+    }
+
+    /**
+     * 本月的第一天、本月的最后一天
+     */
+    @Test
+    public void test20201016164537() {
+        LocalDate today = LocalDate.now();
+        // 本月的第一天
+        LocalDate firstday = today.with(TemporalAdjusters.firstDayOfMonth());
+        // 本月的最后一天
+        LocalDate lastDay = today.with(TemporalAdjusters.lastDayOfMonth());
+        System.out.println("本月的第一天 " + firstday);
+        System.out.println("本月的最后一天 " + lastDay);
+    }
+
+    /**
+     * Period、Duration
+     * 相差天数
+     */
+    @Test
+    public void test20201016173216() {
+        LocalDate x = LocalDate.now();
+        LocalDate y = x.minusDays(20);
+        Period z = Period.between(y, x);
+        // 相差天数
+        System.out.println(z.getDays());
+
+        LocalDateTime x1 = LocalDateTime.now();
+        LocalDateTime y1 = x1.minusDays(15);
+        Duration z1 = Duration.between(y1, x1);
+        // 相差天数
+        System.out.println(z1.toDays());
+    }
+
+    /**
+     * 时间戳转LocalDate或LocalDateTime
+     */
+    @Test
+    public void test20201016174628() {
+        long timestamp = System.currentTimeMillis();
+        // 时间戳转LocalDate
+        LocalDate localDate = Instant.ofEpochMilli(timestamp).atZone(ZoneOffset.ofHours(8)).toLocalDate();
+        // 时间戳转LocalDateTime
+        LocalDateTime localDateTime = Instant.ofEpochMilli(timestamp).atZone(ZoneOffset.ofHours(8)).toLocalDateTime();
+        System.out.println(localDate);
+        System.out.println(localDateTime);
+    }
+
+    /**
+     * 今天、明天
+     */
+    @Test
+    public void test20201021153918() {
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+        long todayMilli = today.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli();
+        long tomorrowMilli = tomorrow.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli();
+
+        System.out.println(today + " 时间戳:" + todayMilli);
+        System.out.println(tomorrow + " 时间戳:" + tomorrowMilli);
     }
 }

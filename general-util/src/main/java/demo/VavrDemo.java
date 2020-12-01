@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static io.vavr.API.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static util.HBaseKit.findOne;
 
@@ -207,5 +209,35 @@ public class VavrDemo {
         JSONObject t1 = tuple3._1;
         JSONObject t2 = tuple3._2;
         JSONObject t3 = tuple3._3;
+    }
+
+    /**
+     * 模式匹配Pattern Matching
+     */
+    @Test
+    public void whenMatchworks_thenCorrect() {
+        Integer input = 2;
+        String output = Match(input).of(
+            Case($(1), "one"),
+            Case($(2), "two"),
+            Case($(3), "three"),
+            Case($(), "?")
+        );
+        assertEquals("two", output);
+    }
+
+    /**
+     * 模式匹配Pattern Matching
+     */
+    @Test
+    public void test20201106101621() {
+        Integer input = 2;
+        Integer out = Match(input).of(
+            Case($(1), x -> x + 2),
+            Case($(2), x -> x + 2),
+            Case($(3), x -> x + 2),
+            Case($(), x -> 0)
+        );
+        System.out.println(out);
     }
 }

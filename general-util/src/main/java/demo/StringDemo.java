@@ -8,6 +8,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 字符串操作
@@ -17,6 +21,7 @@ import java.io.IOException;
  * @date 2020/03/06 16:24
  */
 @Slf4j
+@SuppressWarnings("all")
 public class StringDemo {
 
     /**
@@ -133,5 +138,36 @@ public class StringDemo {
     public void test20200713203510() {
         String s = "(一)合同定义\\n    本条第1款是关于合同定义的规定,";
         System.out.println(StringUtils.deleteWhitespace(s));
+    }
+
+    /**
+     * split(String regex, int limit)
+     * https://www.cnblogs.com/yxmfighting/p/7383013.html
+     */
+    @Test
+    public void test20200919222024() {
+        String s = "/1/2/3/4/5";
+        String[] split0 = s.split("/", 0);
+        String[] split1 = s.split("/", 1);
+        String[] split2 = s.split("/", 2);
+        String[] split3 = s.split("/", 3);
+        String[] split4 = s.split("/", 4);
+        String[] split8 = s.split("/", 8);
+
+        String[] split = s.split("/");
+        System.out.println();
+    }
+
+    /**
+     * SimpleDateFormat.format(Date date, StringBuffer toAppendTo,FieldPosition pos)
+     */
+    @Test
+    public void test20201024190605() {
+        Date date = new Date();
+        StringBuffer sb = new StringBuffer(40);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+        System.out.println(dateFormat.format(date, sb, new FieldPosition(DateFormat.Field.DAY_OF_MONTH)));
+        // 会追加到sb里
+        System.out.println(dateFormat.format(date, sb, new FieldPosition(DateFormat.Field.DAY_OF_MONTH)));
     }
 }

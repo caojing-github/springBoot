@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -182,5 +183,38 @@ public class StreamDemo {
 //        LinkedList<String> collectToCollection = Stream.of(
 //            "Monkey", "Lion", "Giraffe", "Lemur", "Lion"
 //        ).collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    @Test
+    public void test20201201115249() {
+        new Thread(() -> Stream.generate(Math::random).parallel().forEach(x -> {
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName() + " \t" + x);
+        })).start();
+
+        new Thread(() -> Stream.generate(Math::random).parallel().forEach(x -> {
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName() + " \t" + (x + 100));
+        })).start();
+
+        while (true) ;
+    }
+
+    /**
+     * List<Integer>求和
+     */
+    @Test
+    public void test20201110021137() {
+        List<Integer> list = Lists.newArrayList(1, 2, 3, 4, 5);
+        int sum = list.stream().mapToInt(Integer::intValue).sum();
+        System.out.println(sum);
     }
 }

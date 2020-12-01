@@ -500,7 +500,7 @@ public class GlobalExceptionHandler extends RequestBodyAdviceAdapter {
      */
     @Test
     public void test20200826100729() throws UnsupportedEncodingException {
-        String filePath = new String("/Users/caojing/Documents/未解析文书id修复情况-2020-09-04.xlsx");
+        String filePath = new String("/Users/caojing/Documents/未解析文书id修复情况-2020-09-22.xlsx");
         String fileName = StrUtil.subAfter(filePath, "/", true);
         // 728571721@qq.com 鑫辉邮箱
         String[] to = {"caojing@icourt.cc", "728571721@qq.com", "yujianing@icourt.cc", "zhangjin@icourt.cc", "lishaosong@icourt.cc", "meng@icourt.cc"};

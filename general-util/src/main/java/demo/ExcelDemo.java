@@ -17,10 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.util.EntityUtils;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -52,6 +51,7 @@ import static util.HttpUtils.doGet;
  * @date 2020/03/30 01:15
  */
 @Slf4j
+@SuppressWarnings("all")
 public class ExcelDemo {
 
     /**
@@ -421,6 +421,21 @@ public class ExcelDemo {
         // 设置颜色
         row2.getCell(3).setCellStyle(getCellStyle(wb));
 
+        {
+            // 设置字体
+            XSSFCellStyle style = wb.createCellStyle();
+            XSSFFont font = wb.createFont();
+            font.setColor((short) 18); // 参照 IndexedColors 类
+            style.setFont(font);
+
+            // 超链接
+            Hyperlink hyperlink = wb.getCreationHelper().createHyperlink(HyperlinkType.URL);
+            hyperlink.setAddress("https://www.google.com/");
+            XSSFCell cell = row2.getCell(0);
+            cell.setHyperlink(hyperlink);
+            cell.setCellStyle(style);
+        }
+
         // 获取sheet的总行数
         int r = sheet.getPhysicalNumberOfRows();
         // 获取该行的总列数
@@ -459,6 +474,229 @@ public class ExcelDemo {
         font.setColor((short) 22);
         style.setFont(font);
         return style;
+    }
+
+    @Test
+    public void test20201113005446() throws IOException {
+        //创建HSSFWorkbook对象(excel的文档对象)
+        XSSFWorkbook wb = new XSSFWorkbook();
+        //建立新的sheet对象（excel的表单）
+        XSSFSheet sheet = wb.createSheet("超链接");
+
+        //在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+        XSSFRow row1 = sheet.createRow(0);
+        //创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+        row1.createCell(0).setCellValue("公司");
+        row1.createCell(1).setCellValue("链接二");
+
+        //在sheet里创建第二行
+        XSSFRow row2 = sheet.createRow(1);
+        row2.createCell(0).setCellValue("谷歌");
+
+        //创建单元格并设置单元格内容
+        XSSFCell a11 = row2.createCell(1);
+        a11.setCellValue("李明");
+
+        String url = "https://www.google.com/";
+        a11.setCellStyle(getImagestyleCellType(wb));
+        // 超链接，推荐这种配置。简洁
+        a11.setCellFormula(String.format("HYPERLINK(\"%s\",\"%s\")", url, "网址"));
+
+        // 获取sheet的总行数
+        int r = sheet.getPhysicalNumberOfRows();
+        // 获取该行的总列数
+        int l = sheet.getRow(0).getPhysicalNumberOfCells();
+        System.out.println(String.format("总行数:%s 总列数:%s", r, l));
+
+        // 设置所有列为自适应宽度 https://blog.csdn.net/fenglingfeixian/article/details/64906400?utm_source=blogxgwz5
+        for (int i = 0; i < l; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        FileOutputStream output = new FileOutputStream(new File("/Users/caojing/Desktop/超链接.xlsx"));
+        wb.write(output);
+        output.flush();
+    }
+
+    public static CellStyle getImagestyleCellType(XSSFWorkbook wb) {
+        CellStyle style = wb.createCellStyle();
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setLeftBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        style.setBorderTop(BorderStyle.THIN);
+        style.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
+        // 自动换行
+        style.setWrapText(true);
+
+        Font font = wb.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 10);
+        font.setColor(IndexedColors.BLUE.index);
+        font.setUnderline(Font.U_SINGLE);
+        style.setFont(font);
+        return style;
+    }
+
+    /**
+     * 超链接，hutool实现，推荐这种写法，数据与样式解耦
+     */
+    @Test
+    public void test20201112192819() {
+        ZipSecureFile.setMinInflateRatio(-1.0d);    // fix:java.io.IOException: Zip bomb detected!
+        ExcelReader reader = ExcelUtil.getReader("/Users/caojing/Documents/疑似时效性有问题.xlsx");
+        List<Map<String, Object>> readAll = reader.readAll();
+        readAll.forEach(x -> {
+            String thirdId = Optional.ofNullable(x.get("thirdId"))
+                .map(Object::toString)
+                .orElse("");
+
+            String detailUrl = "";
+            if (thirdId.startsWith("A")) {
+                detailUrl = "http://www.faxin.cn/lib/zyfl/zyflcontent.aspx?gid=" + thirdId;
+            } else if (thirdId.startsWith("B")) {
+                detailUrl = "http://www.faxin.cn/lib/dffl/dfflcontent.aspx?gid=" + thirdId;
+            } else if (thirdId.endsWith("=")) {
+                detailUrl = "https://law.wkinfo.com.cn/legislation/detail/" + thirdId;
+            }
+            x.put("detailUrl", detailUrl);
+            x.remove("source");
+        });
+        //通过工具类创建writer
+        ExcelWriter writer = ExcelUtil.getWriter("/Users/caojing/Documents/疑似时效性有问题v8.xlsx");
+
+//        writer.autoSizeColumnAll();
+        //一次性写出内容，强制输出标题
+        writer.write(readAll, true);
+
+        // 设置样式
+        {
+            Workbook wb = writer.getWorkbook();
+
+            CellStyle cellStyle = writer.getWorkbook().createCellStyle();
+            // 设置字体
+            Font font = wb.createFont();
+            font.setColor(IndexedColors.BLUE.index);
+            // 下划线
+            font.setUnderline(Font.U_SINGLE);
+            // 字体
+            font.setFontName("微软雅黑");
+            // 加粗
+            font.setBold(true);
+            cellStyle.setFont(font);
+
+            int rowCount = writer.getPhysicalRowCount();
+            for (int i = 1; i < rowCount; i++) {
+                // 第2列
+                Cell cell1 = writer.getCell(1, i);
+                // 超链接
+                Hyperlink hyperlink1 = wb.getCreationHelper().createHyperlink(HyperlinkType.URL);
+                hyperlink1.setAddress(cell1.getStringCellValue());
+
+                cell1.setHyperlink(hyperlink1);
+                cell1.setCellStyle(cellStyle);
+
+                // 第9列
+                Cell cell2 = writer.getCell(8, i);
+                Hyperlink hyperlink2 = wb.getCreationHelper().createHyperlink(HyperlinkType.URL);
+                hyperlink2.setAddress(cell2.getStringCellValue());
+
+                cell2.setHyperlink(hyperlink2);
+                cell2.setCellStyle(cellStyle);
+            }
+        }
+        //关闭writer，释放内存
+        writer.close();
+    }
+
+    /**
+     * 超链接，使用原始poi实现，不推荐。数据与样式没有解耦
+     */
+    @Test
+    public void test20201113012740() {
+//        // 创建HSSFWorkbook对象(excel的文档对象)
+//        XSSFWorkbook wb = new XSSFWorkbook();
+//        // 建立新的sheet对象（excel的表单）
+//        XSSFSheet sheet = wb.createSheet();
+//
+//        // 在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+//        XSSFRow row1 = sheet.createRow(0);
+//        //创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+//        row1.createCell(0).setCellValue("lid");
+//        row1.createCell(1).setCellValue("链接");
+//        row1.createCell(2).setCellValue("标题");
+//        row1.createCell(3).setCellValue("source");
+//        row1.createCell(4).setCellValue("效力级别");
+//        row1.createCell(5).setCellValue("thirdId");
+//        row1.createCell(6).setCellValue("hbase时效性");
+//        row1.createCell(7).setCellValue("es时效性");
+//        row1.createCell(8).setCellValue("时效依据");
+//
+//        AtomicInteger r = new AtomicInteger();
+//
+//        String dsl = "{\"term\":{\"time_limited\":\"已被修改\"}}";
+//        Consumer<List<LawEntity>> consumer = x -> {
+//            List<Get> gets = x.stream().map(y ->
+//                new Get(y.getLid().getBytes())
+//                    .addColumn("content".getBytes(), "ext".getBytes())
+//                    .addColumn("content".getBytes(), "source".getBytes())
+//            ).collect(Collectors.toList());
+//
+//            List<LawEntity> list = hBaseRepository.multiGet(gets);
+//            list.stream()
+//                .filter(y -> TimeLimitedEnum.失效.name().equals(TimeLimitedNormalizer.normalize(y.getTimeLimited())))
+//                .forEach(z -> {
+//                    r.incrementAndGet();
+//                    XSSFRow row2 = sheet.createRow(r.get());
+//                    //创建单元格并设置单元格内容
+//                    row2.createCell(0).setCellValue(z.getLid());
+//                    {
+//                        XSSFCell cell = row2.createCell(1);
+//                        String url = getDetailUrl(z.getLid());
+//                        cell.setCellValue(url);
+//
+//                        // 设置字体
+//                        XSSFCellStyle style = wb.createCellStyle();
+//                        XSSFFont font = wb.createFont();
+//                        font.setColor(IndexedColors.BLUE.index);
+//                        style.setFont(font);
+//
+//                        // 超链接
+//                        Hyperlink hyperlink = wb.getCreationHelper().createHyperlink(HyperlinkType.URL);
+//                        hyperlink.setAddress(url);
+//                        cell.setHyperlink(hyperlink);
+//                        cell.setCellStyle(style);
+//                    }
+//                    row2.createCell(2).setCellValue(z.getTitle());
+//                    row2.createCell(3).setCellValue(z.getDsSource());
+//                    row2.createCell(4).setCellValue(z.getEffLevel());
+//                    row2.createCell(5).setCellValue(z.getThirdId());
+//                    row2.createCell(6).setCellValue("失效");
+//                    row2.createCell(7).setCellValue("已被修改");
+//
+//                    // 时效依据
+//                    String dsl2 = String.format("{\"_source\":[\"lid\"],\"query\":{\"nested\":{\"path\":\"timeLimitedBasis\",\"query\":{\"term\":{\"timeLimitedBasis.lid\":\"%s\"}}}}}", z.getLid());
+//                    List<JSONObject> list2 = esRepository.getByDSL(dsl2)
+//                        .stream()
+//                        .map(a -> {
+//                            JSONObject j = new JSONObject();
+//                            j.put("lid", a.getLid());
+//                            j.put("url", getDetailUrl(a.getLid()));
+//                            return j;
+//                        }).collect(Collectors.toList());
+//
+//                    row2.createCell(8).setCellValue(JSON.toJSONString(list2));
+//                });
+//        };
+//        esRepository.scroll(dsl, new String[]{"lid"}, consumer);
+//
+//        String path = EXPORT_PATH_PREFIX + "疑似时效性有问题.xlsx";
+//        FileOutputStream output = new FileOutputStream(new File(path));
+//        wb.write(output);
+//        output.flush();
+//        log.info(path);
     }
 
     /**

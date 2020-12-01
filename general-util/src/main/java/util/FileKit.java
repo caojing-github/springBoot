@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * 文件工具类
@@ -77,5 +79,19 @@ public final class FileKit {
             JSONObject jsonObject = JSON.parseObject(fr.readString());
             System.out.println();
         }
+    }
+
+    /**
+     * 文件转换为byte[]
+     * https://www.jianshu.com/p/b8b8f1ded401
+     */
+    @Test
+    public void test20201104155050() throws IOException {
+        String filePath = "/temp/abc.txt";
+        // 方法一
+//        byte[] bFile = Files.readAllBytes(new File(filePath).toPath());
+        // 方法二
+        byte[] bFile = Files.readAllBytes(Paths.get(filePath));
+        System.out.println();
     }
 }

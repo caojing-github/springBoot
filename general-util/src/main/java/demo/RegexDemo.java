@@ -1,5 +1,6 @@
 package demo;
 
+import cn.hutool.core.util.ReUtil;
 import org.junit.Test;
 
 /**
@@ -22,10 +23,21 @@ public class RegexDemo {
     }
 
     /**
-     * https://hutool.cn/docs/#/core/%E5%B7%A5%E5%85%B7%E7%B1%BB/%E6%AD%A3%E5%88%99%E5%B7%A5%E5%85%B7-ReUtil
+     * 从文件路径提取【文件名】、【扩展名】
      */
     @Test
-    public void test20200525111731() throws Exception {
+    public void test20200525111731() {
+        String s = "/Users/caojing/Downloads/优案品析-案例/2213-云南3--行政--杨屹梅--李江会诉县人社局工伤保险待遇行政给付纠纷案.doc";
+        // 2213-云南3--行政--杨屹梅--李江会诉县人社局工伤保险待遇行政给付纠纷案.doc
+        System.out.println(ReUtil.get(".+/(.+)$", s, 1));
 
+        // 2213-云南3--行政--杨屹梅--李江会诉县人社局工伤保险待遇行政给付纠纷案
+        System.out.println(ReUtil.get(".+/(.+)(\\..*)$", s, 1));
+
+        // doc
+        System.out.println(ReUtil.get(".+/(.+)\\.(.*)$", s, 2));
+
+        // .doc
+        System.out.println(ReUtil.get(".+/(.+)(\\..*)$", s, 2));
     }
 }

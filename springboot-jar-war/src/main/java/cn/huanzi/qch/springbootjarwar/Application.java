@@ -5,8 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 //jar包
 //@SpringBootApplication
@@ -20,28 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 //war包
 @SpringBootApplication
-public class SpringbootJarWarApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
+public class Application extends SpringBootServletInitializer implements WebApplicationInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(SpringbootJarWarApplication.class);
+        return application.sources(Application.class);
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringbootJarWarApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }
 
 
-/**
- * 测试controller
- */
-@RestController
-class IndexController {
 
-    @GetMapping("/")
-    String index() {
-        return "欢迎访问 springboot-jar-war";
-    }
-}
 

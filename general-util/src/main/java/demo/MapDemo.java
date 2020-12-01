@@ -7,6 +7,8 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Map方法操作示例
@@ -14,6 +16,7 @@ import java.util.Map;
  * @author CaoJing
  * @date 2019/12/12 16:00
  */
+@SuppressWarnings("all")
 public class MapDemo {
 
     /**
@@ -100,5 +103,18 @@ public class MapDemo {
         map.put("c", null);
         System.out.println(map.getOrDefault("c", "c_Default"));
         System.out.println(map.getOrDefault("d", "d_Default"));
+    }
+
+    /**
+     * ConcurrentSkipListMap
+     */
+    @Test
+    public void test20201020205157() {
+        ConcurrentMap<String, String> map = new ConcurrentSkipListMap<>();
+        map.put("1", "1");
+        map.put("2", "2");
+        map.put("3", "3");
+        map.put("4", "3");
+        System.out.println();
     }
 }

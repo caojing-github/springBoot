@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * CompletableFuture
+ * runAsync() 运行一个异步任务不返回结果
+ * supplyAsync() 运行一个异步任务并且返回结果
  *
  * @author CaoJing
  * @date 2020/08/26 03:29
@@ -16,6 +18,9 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("all")
 public class CompletableFutureDemo {
 
+    /**
+     * CompletableFuture.supplyAsync
+     */
     @Test
     public void test20200826033507() throws ExecutionException, InterruptedException {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {

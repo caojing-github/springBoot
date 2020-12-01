@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 /**
@@ -91,5 +92,21 @@ public class ListDemo {
         Lists.newArrayList(1, 2, 3, 4).stream().parallel().forEach(x -> {
             log.info(Thread.currentThread().getName());
         });
+    }
+
+    /**
+     * listIterator
+     */
+    @Test
+    public void test20201031135528() {
+        ListIterator<Integer> iterator = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8).listIterator();
+        System.out.println("next");
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+        System.out.println("previous");
+        while (iterator.hasPrevious()) {
+            System.out.println(iterator.previous());
+        }
     }
 }
