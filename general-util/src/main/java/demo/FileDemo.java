@@ -74,4 +74,13 @@ public class FileDemo {
         List<String> list = IoUtil.readLines(ResourceUtil.getReader("失效法规.txt", Charset.defaultCharset()), Lists.newArrayList());
         System.out.println();
     }
+
+    /**
+     * 删除文件
+     */
+    @Test
+    public void test20201201164936() {
+        File file = new File("/Users/caojing/Documents/爬取时间2020_08_26_00_00_00_2020_08_27_00_00_00-未解析文书id.xlsx");
+        file.delete();
+    }
 }

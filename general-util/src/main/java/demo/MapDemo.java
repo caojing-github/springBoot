@@ -41,7 +41,9 @@ public class MapDemo {
 
         /**
          * merge
-         * 存不存在key都合并
+         * 存不存在key都合并，它将新的值赋值到 key （如果不存在）或更新给定的key 值对应的 value
+         * 第2个入参为key对应的新value，第3个入参为2元函数，将旧value和新value处理得到最终value
+         * 如果key不存在，则新value直接插入
          */
         myMap.merge(keyA, "merge01", (v1, v2) -> v1 + v2);
         myMap.merge(keyD, "merge01", (v1, v2) -> v1 + v2);
@@ -49,7 +51,7 @@ public class MapDemo {
 
         /**
          * compute
-         * 存不存在key都操作
+         * 存不存在key都操作，第2个入参是2元函数，分别是key和value，计算后返回新value
          */
         myMap.compute(keyB, (k, v) -> v == null ? "compute" : v + "compute");
         myMap.compute(keyF, (k, v) -> v == null ? "compute" : v + "compute");

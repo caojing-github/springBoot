@@ -23,15 +23,30 @@ public class Controller {
      */
     @GetMapping("/download")
     public void download(HttpServletRequest request, HttpServletResponse response) {
-        response.setCharacterEncoding(request.getCharacterEncoding());
-        response.setContentType("application/octet-stream");
-        File file = new File("/Users/caojing/Documents/未解析文书id修复情况-2020-12-01.xlsx");
+        download(request, response, "/Users/caojing/Documents/未解析文书id修复情况-2020-12-01.xlsx");
+    }
+
+    /**
+     * 下载文件
+     *
+     * @param request  HttpServletRequest
+     * @param response HttpServletResponse
+     * @param path     下载文件绝对路径
+     * @author CaoJing
+     * @date 2020/12/01 17:55:20
+     */
+    private void download(HttpServletRequest request, HttpServletResponse response, String path) {
+        File file = new File(path);
         try (FileInputStream fis = new FileInputStream(file)) {
+            response.setCharacterEncoding(request.getCharacterEncoding());
+            response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
+
             IOUtils.copy(fis, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {
             log.error("下载文件异常", e);
+            throw new RuntimeException("下载文件异常");
         }
     }
 }
