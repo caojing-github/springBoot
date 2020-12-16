@@ -1,5 +1,8 @@
 # 该镜像需要依赖的基础镜像
 FROM openjdk:8-jdk
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # 声明服务运行在10083端口
 EXPOSE 10083
 # 指定维护者的名字
