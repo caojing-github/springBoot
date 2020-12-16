@@ -78,18 +78,4 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-
-    <!--构建工具-->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <finalName>${project.artifactId}</finalName>
-                    <outputDirectory>../package</outputDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
