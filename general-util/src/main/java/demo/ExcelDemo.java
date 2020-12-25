@@ -20,6 +20,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -36,6 +37,7 @@ import util.HttpUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
@@ -46,6 +48,8 @@ import static util.HttpUtils.doGet;
 /**
  * Excel
  * https://hutool.cn/docs/#/poi/Excel%E5%B7%A5%E5%85%B7-ExcelUtil
+ * HSSFWorkbook:是操作Excel2003以前（包括2003）的版本，扩展名是.xls
+ * XSSFWorkbook:是操作Excel2007的版本，扩展名是.xlsx；
  *
  * @author CaoJing
  * @date 2020/03/30 01:15
@@ -896,5 +900,128 @@ public class ExcelDemo {
 
     public String getUrl(String jid) {
         return String.format("https://alphalawyer.cn/#/app/tool/excellentCase/detail/%s", jid);
+    }
+
+    /**
+     * 单元格suiwe
+     */
+    @Test
+    public void test20201223112259() throws IOException {
+        XSSFWorkbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet();
+        sheet.setDefaultColumnWidth(40);
+
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setWrapText(true);
+
+        Row row = sheet.createRow(0);
+        Cell cell = row.createCell(0);
+
+        // 黑色加粗
+        XSSFFont blackBold = wb.createFont();
+        blackBold.setFontName("宋体");
+        blackBold.setFontHeightInPoints((short) 14);
+        blackBold.setColor(IndexedColors.BLACK.index);
+        blackBold.setBold(true);
+
+        // 黑色不加粗
+        XSSFFont blackUnBold = wb.createFont();
+        blackUnBold.setFontName("宋体");
+        blackUnBold.setFontHeightInPoints((short) 14);
+        blackUnBold.setColor(IndexedColors.BLACK.index);
+        blackUnBold.setBold(false);
+
+        // 红色删除线
+        XSSFFont redDeleted = wb.createFont();
+        redDeleted.setFontName("宋体");
+        redDeleted.setFontHeightInPoints((short) 14);
+        redDeleted.setColor(IndexedColors.RED.index);
+        redDeleted.setStrikeout(true);
+
+        // 绿色新增
+        XSSFFont green = wb.createFont();
+        green.setFontName("宋体");
+        green.setFontHeightInPoints((short) 14);
+        green.setColor(IndexedColors.GREEN.index);
+
+        XSSFRichTextString cellValue = new XSSFRichTextString();
+        cellValue.append("黑色加粗\n", blackBold);
+        cellValue.append("黑色不加粗\n", blackUnBold);
+        cellValue.append("红色删除\n", redDeleted);
+        cellValue.append("绿色新增\n", green);
+
+//        XSSFRichTextString cellValue = new XSSFRichTextString("黑色加粗\n黑色不加粗\n红色删除\n绿色新增\n");
+//        cellValue.applyFont(0, 4, blackBold);
+//        cellValue.applyFont(5, 10, blackUnBold);
+//        cellValue.applyFont(11, 15, redDeleted);
+//        cellValue.applyFont(16, 20, green);
+
+        cell.setCellValue(cellValue);
+        cell.setCellStyle(cellStyle);
+
+        OutputStream out = new FileOutputStream("/Users/caojing/Documents/单元格样式.xlsx");
+        wb.write(out);
+        wb.close();
+    }
+
+    /**
+     * 合并单元格
+     */
+    @Test
+    public void test20201224160600() throws IOException {
+        XSSFWorkbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet();
+
+        XSSFCellStyle cellStyle = wb.createCellStyle();
+        // 自动换行
+        cellStyle.setWrapText(true);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        XSSFCellStyle cellStyle2 = wb.createCellStyle();
+        // 自动换行
+        cellStyle2.setWrapText(true);
+        // 水平居中
+        cellStyle2.setAlignment(HorizontalAlignment.CENTER);
+
+        // 第1行
+        {
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2));
+            Row row0 = sheet.createRow(0);
+            row0.createCell(0).setCellValue("第一编 总则");
+            row0.getCell(0).setCellStyle(cellStyle2);
+        }
+        // 第2行
+        {
+            Row row1 = sheet.createRow(1);
+            row1.createCell(0).setCellValue("修改情况");
+            row1.createCell(1).setCellValue("《民法典》");
+            row1.createCell(2).setCellValue("新旧对照");
+        }
+        // 第3行
+        {
+            sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 2));
+            Row row2 = sheet.createRow(2);
+            row2.createCell(0).setCellValue("第二编 物权");
+            row2.getCell(0).setCellStyle(cellStyle2);
+        }
+        // 第4行
+        {
+            Row row3 = sheet.createRow(3);
+            row3.createCell(0).setCellValue("本条未修改 ");
+            row3.createCell(1).setCellValue("第一条　为了保护民事主体的合法权益，调整民事关系，维护社会和经济秩序，适应中国特色社会主义发展要求，弘扬社会主义核心价值观，根据宪法，制定本法。");
+            row3.createCell(2).setCellValue("中华人民共和国民法总则\n第一条　为了保护民事主体的合法权益，调整民事关系，维护社会和经济秩序，适应中国特色社会主义发展要求，弘扬社会主义核心价值观，根据宪法，制定本法。");
+
+            row3.getCell(0).setCellStyle(cellStyle);
+            row3.getCell(1).setCellStyle(cellStyle);
+            row3.getCell(2).setCellStyle(cellStyle);
+        }
+        // 设置列宽 https://blog.csdn.net/lipinganq/article/details/78090553
+        sheet.setColumnWidth(0, 18 * 256);
+        sheet.setColumnWidth(1, 40 * 256);
+        sheet.setColumnWidth(2, 40 * 256);
+
+        OutputStream out = new FileOutputStream("/Users/caojing/Documents/合并单元格.xlsx");
+        wb.write(out);
+        wb.close();
     }
 }
